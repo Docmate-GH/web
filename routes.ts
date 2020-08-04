@@ -1,7 +1,7 @@
 function wrapProvider(item) {
   return {
     ...item,
-    wrappers: ['@/client']
+    wrappers: ['@/client', '@/wrapper']
   }
 }
 

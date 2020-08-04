@@ -7,10 +7,13 @@
     "umi": "^3.2.14"
   },
   "dependencies": {
+    "@adobe/react-spectrum": "^3.1.0",
+    "@spectrum-css/sidenav": "^3.0.0-beta.2",
     "axios": "^0.19.2",
     "formik": "^2.1.5",
     "graphql": "^15.3.0",
     "nanoid": "^3.1.12",
+    "normalize.css": "^8.0.1",
     "urql": "^1.10.0"
   }
 }

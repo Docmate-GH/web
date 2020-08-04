@@ -1,7 +1,10 @@
 import * as React from 'react'
 import { useQuery, useMutation } from 'urql'
 import { nanoid } from 'nanoid'
-
+import {
+  Grid, View, Flex, ListBox, Section, Item, Button
+} from '@adobe/react-spectrum'
+import SideNav, { SideNavItem, SideNavItemLink, SideNavHead } from '../../components/SideNav'
 type GetDocByIdResult = {
   doc_by_pk: {
     title: string,
@@ -80,9 +83,48 @@ function DocAdmin({
   }
 
   return (
-    <div>
-      {doc.slug}
-      <div>
+
+    <Flex direction='row' minHeight='100%'>
+      <View backgroundColor='static-white' padding='size-200' width='size-3000'>
+        <SideNav>
+          <SideNavItem>
+            <SideNavHead>
+              Doc
+            </SideNavHead>
+            <SideNavItem>
+              <SideNavItemLink>Open Doc</SideNavItemLink>
+            </SideNavItem>
+            <SideNavItem>
+              <SideNavItemLink>Settings</SideNavItemLink>
+            </SideNavItem>
+          </SideNavItem>
+
+          <SideNavItem>
+            <SideNavHead>
+              Pages
+            </SideNavHead>
+            {doc.pages.map(page => {
+              return (
+                <SideNavItem key={page.id}>
+                  <SideNavItemLink>{page.title}</SideNavItemLink>
+                </SideNavItem>
+              )
+            })}
+          </SideNavItem>
+
+        </SideNav>
+
+        <View UNSAFE_className='text-center' paddingY='size-100' >
+          <Button variant='cta'>New Page</Button>
+        </View>
+      </View>
+
+
+      <View backgroundColor='static-white' width='100%'>
+        Hello
+      </View>
+
+      {/* <div>
         <a onClick={_ => window.open(`http://localhost:3000/docs/${doc.slug}`, '_blank')}>open</a>
 
       </div>
@@ -105,8 +147,8 @@ function DocAdmin({
           create new page
 
         </button>
-      </div>
-    </div>
+      </div> */}
+    </Flex>
   )
 }
 
