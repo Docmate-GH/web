@@ -1,0 +1,15 @@
+{
+  "name": "docpera",
+  "scripts": {
+    "dev": "umi dev"
+  },
+  "devDependencies": {
+    "umi": "^3.2.14"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "formik": "^2.1.5",
+    "graphql": "^15.3.0",
+    "urql": "^1.10.0"
+  }
+}
