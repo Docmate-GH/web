@@ -1,22 +1,38 @@
 import * as React from 'react'
-import { useQuery } from 'urql'
-
+import { useQuery, useMutation } from 'urql'
+import { nanoid } from 'nanoid'
 
 type GetDocByIdResult = {
-  getDocById: {
-    id: string,
+  doc_by_pk: {
+    title: string,
     slug: string,
     pages: {
-      id: string, title: string, index: number, slug: string
+      id: string,
+      slug: string,
+      title
     }[]
   }
 }
-const GetDocById = `
-query($docId: String!, $withPages: Boolean!) {
-  getDocById(docId: $docId, withPages: $withPages) {
-    id, slug, pages {
-      id, title, index, slug
+const GetDocBySlug = `
+query($docSlug: String!) {
+  doc_by_pk(slug: $docSlug) {
+    title, slug, pages {
+      slug, title
     }
+  }
+}
+`
+
+type CreatePageResult = {
+  insert_page_one: {
+    id: string,
+    slug: string,
+  }
+}
+const CreatePage = `
+mutation ($object: page_insert_input!) {
+  insert_page_one(object: $object) {
+    id, slug
   }
 }
 `
@@ -25,14 +41,15 @@ function DocAdmin({
   match,
   history
 }) {
-  const { id } = match.params
+  const { docSlug } = match.params
 
   const [getDocReuslt, getDoc] = useQuery<GetDocByIdResult>({
-    query: GetDocById, variables: {
-      docId: id,
-      withPages: true
+    query: GetDocBySlug, variables: {
+      docSlug,
     }
   })
+
+  const [createPageResult, createPage] = useMutation<CreatePageResult>(CreatePage)
 
   React.useEffect(() => {
     getDoc()
@@ -47,7 +64,20 @@ function DocAdmin({
     return <div>Error</div>
   }
 
-  const doc = getDocReuslt.data.getDocById
+  const doc = getDocReuslt.data.doc_by_pk
+
+  async function onCreateNewPage() {
+    const res = await createPage({
+      object: {
+        doc_slug: docSlug,
+        slug: nanoid(8),
+        content: ''
+      }
+    })
+    if (res.data) {
+      history.push(`/doc/${docSlug}/${res.data.insert_page_one.slug}`)
+    }
+  }
 
   return (
     <div>
@@ -60,7 +90,7 @@ function DocAdmin({
       <div>
         {doc.pages.map(page => {
           function goPageEdit() {
-            history.push(`/doc/${doc.id}/${page.slug}`)
+            history.push(`/doc/${doc.slug}/${page.slug}`)
           }
           return (
             <div key={page.id}>
@@ -68,6 +98,13 @@ function DocAdmin({
             </div>
           )
         })}
+      </div>
+
+      <div>
+        <button onClick={onCreateNewPage}>
+          create new page
+
+        </button>
       </div>
     </div>
   )

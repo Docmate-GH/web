@@ -6,16 +6,15 @@ import { history } from 'umi'
 import * as utils from '../utils'
 
 type GetAllDocsResult = {
-  allDocs: {
-    id: string,
+  doc: {
     slug: string,
     title: string
   }[]
 }
 const GetAllDocs = `
 query {
-  allDocs {
-    id, slug, title
+  doc {
+    slug, title
   }
 }
 `
@@ -39,13 +38,13 @@ function Page({
     return <div>Error...</div>
   }
 
-  function onClickDoc(doc: GetAllDocsResult['allDocs'][0]) {
-    history.push(`/doc/${doc.id}`)
+  function onClickDoc(doc: GetAllDocsResult['doc'][0]) {
+    history.push(`/doc/${doc.slug}`)
   }
 
   return (
     <div>
-      <Docs docs={allDocsResult.data.allDocs} onClickDoc={onClickDoc} />
+      <Docs docs={allDocsResult.data.doc} onClickDoc={onClickDoc} />
     </div>
   )
 }
@@ -55,8 +54,8 @@ function Docs({
   docs,
   onClickDoc
 }: {
-  docs: GetAllDocsResult['allDocs'],
-  onClickDoc?: (doc: GetAllDocsResult['allDocs'][0]) => void
+  docs: GetAllDocsResult['doc'],
+  onClickDoc?: (doc: GetAllDocsResult['doc'][0]) => void
 }) {
 
   return (
@@ -68,7 +67,7 @@ function Docs({
         }
 
         return (
-          <div key={doc.id}>
+          <div key={doc.slug}>
             <div onClick={onClickDoc ? _ => onClickDoc(doc) : utils.noop}>{doc.title}</div>
           </div>
         )

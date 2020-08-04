@@ -3,18 +3,24 @@ import { useQuery, useMutation } from 'urql'
 import { useFormik } from 'formik'
 
 const GetPage = `
-query($docId: String!, $pageSlug: String!) {
-  getPage(docId: $docId, pageSlug: $pageSlug) {
-    title, content, id
+query($docSlug: String!, $pageSlug: String!) {
+  page(
+    where: {
+      doc_slug: { _eq: $docSlug },
+      slug:{_eq: $pageSlug }
+    }
+  ) {
+    id, slug, title, content
   }
 }
 `
 type GetPageResult = {
-  getPage: {
+  page: {
+    id: string,
+    slug: string,
     title: string,
-    content: string,
-    id: string
-  }
+    content: string
+  }[]
 }
 
 type EditPageResult = {
@@ -23,20 +29,31 @@ type EditPageResult = {
   }
 }
 const EditPage = `
-mutation($docId: String!, $pageSlug: String!, $input: EditPageInput!) {
-  editPage(docId: $docId, pageSlug: $pageSlug, input: $input) {
+mutation($pageId: uuid!, $input: page_set_input!) {
+  update_page_by_pk(pk_columns: {id: $pageId}, _set: $input) {
     id
   }
 }
 `
 
-export default ({
-  match
-}) => {
-  const { docId, pageSlug } = match.params
+const DeletePage = `
+mutation($pageId: uuid!) {
+  delete_page_by_pk(id: $pageId) {
+    id, slug
+  }
+}
+`
 
-  const [getPageResult, getPage] = useQuery<GetPageResult>({ query: GetPage, variables: { docId, pageSlug } })
-  const [ editPageResult, editPage ] = useMutation<EditPageResult>(EditPage)
+export default ({
+  match,
+  history
+}) => {
+  const { docSlug, pageSlug } = match.params
+
+  const [getPageResult, getPage] = useQuery<GetPageResult>({ query: GetPage, variables: { docSlug, pageSlug } })
+  const [editPageResult, editPage] = useMutation<EditPageResult>(EditPage)
+  const [deletePageResult, deletePage] = useMutation<EditPageResult>(DeletePage)
+
 
   React.useEffect(() => {
     getPage()
@@ -45,12 +62,12 @@ export default ({
   const mainForm = useFormik({
     enableReinitialize: true,
     initialValues: {
-      title: getPageResult.data?.getPage.title,
-      content: getPageResult.data?.getPage.content
+      title: getPageResult.data?.page[0]?.title,
+      content: getPageResult.data?.page[0]?.content
     },
     async onSubmit(values) {
       const res = await editPage({
-        docId, pageSlug,
+        pageId: getPageResult.data.page[0].id,
         input: {
           title: values.title,
           content: values.content
@@ -70,7 +87,19 @@ export default ({
     return <div>Loading...</div>
   }
 
-  const page = getPageResult.data.getPage
+  if (!getPageResult.data.page[0]) {
+    return <div>404</div>
+  }
+
+  async function onClickDelete(page: GetPageResult['page'][0]) {
+    const res = await deletePage({
+      pageId: page.id
+    })
+    console.log(res)
+    history.push(`/doc/${docSlug}`)
+  }
+
+  const page = getPageResult.data.page[0]!
 
   return (
     <div>
@@ -88,6 +117,10 @@ export default ({
           <button type='submit'>save</button>
         </div>
       </form>
+
+      <div>
+        <button onClick={_ => onClickDelete(page)}>delete</button>
+      </div>
     </div>
   )
 }
