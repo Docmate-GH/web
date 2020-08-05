@@ -7,8 +7,8 @@ import {
 import SideNav, { SideNavItem, SideNavItemLink, SideNavHead } from '../../components/SideNav'
 type GetDocByIdResult = {
   doc_by_pk: {
+    id: string
     title: string,
-    slug: string,
     pages: {
       id: string,
       slug: string,
@@ -17,9 +17,9 @@ type GetDocByIdResult = {
   }
 }
 const GetDocBySlug = `
-query($docSlug: String!) {
-  doc_by_pk(slug: $docSlug) {
-    title, slug, pages(
+query($docId: uuid!) {
+  doc_by_pk(id: $docId) {
+    id, title, pages(
       where: {
         deleted_at: { _is_null: true }
       }
@@ -49,11 +49,11 @@ function DocAdmin({
   history,
   children
 }) {
-  const { docSlug } = match.params
+  const { docId } = match.params
 
   const [getDocReuslt, getDoc] = useQuery<GetDocByIdResult>({
     query: GetDocBySlug, variables: {
-      docSlug,
+      docId,
     }
   })
 
@@ -77,13 +77,13 @@ function DocAdmin({
   async function onCreateNewPage() {
     const res = await createPage({
       object: {
-        doc_slug: docSlug,
+        doc_id: docId,
         slug: nanoid(8),
         content: ''
       }
     })
     if (res.data) {
-      history.push(`/doc/${docSlug}/${res.data.insert_page_one.slug}`)
+      history.push(`/doc/${docId}/${res.data.insert_page_one.slug}`)
     }
   }
 
@@ -97,7 +97,7 @@ function DocAdmin({
               Doc
             </SideNavHead>
             <SideNavItem>
-              <SideNavItemLink onClick={_ => window.open(`http://localhost:3000/docs/${doc.slug}`)}>Open Doc</SideNavItemLink>
+              <SideNavItemLink onClick={_ => window.open(`http://localhost:3000/docs/${doc.id}`)}>Open Doc</SideNavItemLink>
             </SideNavItem>
             <SideNavItem>
               <SideNavItemLink>Settings</SideNavItemLink>
@@ -111,7 +111,7 @@ function DocAdmin({
             {doc.pages.map(page => {
               return (
                 <SideNavItem key={page.id}>
-                  <SideNavItemLink onClick={_ => history.push(`/doc/${doc.slug}/${page.slug}`)}>{page.title}</SideNavItemLink>
+                  <SideNavItemLink onClick={_ => history.push(`/doc/${doc.id}/${page.slug}`)}>{page.title}</SideNavItemLink>
                 </SideNavItem>
               )
             })}

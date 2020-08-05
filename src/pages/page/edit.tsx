@@ -7,10 +7,10 @@ import More from '@spectrum-icons/workflow/More'
 import Delete from '@spectrum-icons/workflow/Delete'
 
 const GetPage = `
-query($docSlug: String!, $pageSlug: String!) {
+query($docId: uuid!, $pageSlug: String!) {
   page(
     where: {
-      doc_slug: { _eq: $docSlug },
+      doc_id: { _eq: $docId },
       slug:{_eq: $pageSlug },
       deleted_at: {_is_null: true}
     }
@@ -55,9 +55,9 @@ export default ({
   match,
   history
 }) => {
-  const { docSlug, pageSlug } = match.params
+  const { docId, pageSlug } = match.params
 
-  const [getPageResult, getPage] = useQuery<GetPageResult>({ query: GetPage, variables: { docSlug, pageSlug } })
+  const [getPageResult, getPage] = useQuery<GetPageResult>({ query: GetPage, variables: { docId, pageSlug } })
   const [editPageResult, editPage] = useMutation<EditPageResult>(EditPage)
   const [deletePageResult, deletePage] = useMutation<EditPageResult>(DeletePage)
 
@@ -104,7 +104,7 @@ export default ({
       pageId: page.id
     })
     console.log(res)
-    history.push(`/doc/${docSlug}`)
+    history.push(`/doc/${docId}`)
   }
 
   const page = getPageResult.data.page[0]!
@@ -120,14 +120,7 @@ export default ({
         <View padding='size-100' backgroundColor='static-white' UNSAFE_style={{ boxSizing: 'border-box' }}>
           <Flex direction='row' justifyContent='space-between'>
             <View flex='1'>
-              <Breadcrumbs showRoot onAction={action => {
-                if (action === 'home') {
-                  history.push('/')
-                }
-              }}>
-                <Item key='home'>Home</Item>
-                <Item key="title">{page.title}</Item>
-              </Breadcrumbs>
+
             </View>
             <View>
               <Flex gap='size-100'>
