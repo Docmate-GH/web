@@ -7,8 +7,19 @@ function wrapProvider(item) {
 
 export default [
   { exact: true, path: '/', component: 'index' },
-  { path: '/doc/:docId', component: 'doc/admin', routes: [
-    { path: '/doc/:docId/:pageSlug', component: 'page/edit' }
-  ] },
-
+  {
+    path: '/admin',
+    routes: [
+      {
+        path: '/admin/doc/:docId',
+        component: 'admin/doc/index',
+        routes: [
+          {
+            path: '/admin/doc/:docId/page/:pageSlug',
+            component: 'admin/doc/page'
+          }
+        ]
+      }
+    ].map(wrapProvider)
+  }
 ].map(wrapProvider)

@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid'
 import {
   Grid, View, Flex, ListBox, Section, Item, Button
 } from '@adobe/react-spectrum'
-import SideNav, { SideNavItem, SideNavItemLink, SideNavHead } from '../../components/SideNav'
+import SideNav, { SideNavItem, SideNavItemLink, SideNavHead } from '../../../components/SideNav'
 type GetDocByIdResult = {
   doc_by_pk: {
     id: string
@@ -83,7 +83,7 @@ function DocAdmin({
       }
     })
     if (res.data) {
-      history.push(`/doc/${docId}/${res.data.insert_page_one.slug}`)
+      history.push(`/admin/doc/${docId}/page/${res.data.insert_page_one.slug}`)
     }
   }
 
@@ -111,7 +111,7 @@ function DocAdmin({
             {doc.pages.map(page => {
               return (
                 <SideNavItem key={page.id}>
-                  <SideNavItemLink onClick={_ => history.push(`/doc/${doc.id}/${page.slug}`)}>{page.title}</SideNavItemLink>
+                  <SideNavItemLink onClick={_ => history.push(`/admin/doc/${doc.id}/page/${page.slug}`)}>{page.title}</SideNavItemLink>
                 </SideNavItem>
               )
             })}

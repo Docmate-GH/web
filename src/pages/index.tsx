@@ -93,7 +93,7 @@ function Page({
                     title: createDocFormValues.current.title
                   })
                   if (createDocResult.data?.insert_doc_one.id) {
-                    history.push(`/doc/${createDocResult.data.insert_doc_one.id}`)
+                    history.push(`/admin/doc/${createDocResult.data.insert_doc_one.id}`)
                   } else {
                     // TODO: create page error
                   }
@@ -120,7 +120,7 @@ function Page({
   }
 
   function onClickDoc(doc: GetAllDocsResult['doc'][0]) {
-    history.push(`/doc/${doc.id}`)
+    history.push(`/admin/doc/${doc.id}`)
   }
 
   return (

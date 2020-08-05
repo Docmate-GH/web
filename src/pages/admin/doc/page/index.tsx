@@ -81,18 +81,16 @@ export default ({
           content: values.content
         }
       })
-
-      console.log(res)
     }
   })
 
   if (getPageResult.error) {
     console.log(getPageResult.error)
-    return <div>Error...</div>
+    return <div></div>
   }
 
   if (getPageResult.fetching) {
-    return <div>Loading...</div>
+    return <div></div>
   }
 
   if (!getPageResult.data.page[0]) {
@@ -104,7 +102,7 @@ export default ({
       pageId: page.id
     })
     console.log(res)
-    history.push(`/doc/${docId}`)
+    history.push(`/admin/doc/${docId}`)
   }
 
   const page = getPageResult.data.page[0]!
@@ -120,7 +118,14 @@ export default ({
         <View padding='size-100' backgroundColor='static-white' UNSAFE_style={{ boxSizing: 'border-box' }}>
           <Flex direction='row' justifyContent='space-between'>
             <View flex='1'>
-
+              <Breadcrumbs onAction={key => {
+                if (key === 'home') {
+                  history.push('/')
+                }
+              }}>
+                <Item key="home">Home</Item>
+                <Item key="title">{page.title}</Item>
+              </Breadcrumbs>
             </View>
             <View>
               <Flex gap='size-100'>
