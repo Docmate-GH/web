@@ -9,8 +9,10 @@
   "dependencies": {
     "@adobe/react-spectrum": "^3.1.0",
     "@spectrum-css/sidenav": "^3.0.0-beta.2",
+    "@spectrum-css/table": "^3.0.0-beta.3",
     "@spectrum-icons/workflow": "^3.1.0",
     "axios": "^0.19.2",
+    "classnames": "^2.2.6",
     "formik": "^2.1.5",
     "graphql": "^15.3.0",
     "nanoid": "^3.1.12",

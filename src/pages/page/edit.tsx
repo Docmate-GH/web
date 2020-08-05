@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { useQuery, useMutation } from 'urql'
 import { useFormik } from 'formik'
-import { View, Button, Flex, MenuTrigger, ActionButton, Menu, Item, Text, TextField, ProgressCircle } from '@adobe/react-spectrum'
+import { View, Button, Flex, MenuTrigger, ActionButton, Menu, Item, Text, TextField, ProgressCircle, Breadcrumbs } from '@adobe/react-spectrum'
 
 import More from '@spectrum-icons/workflow/More'
 import Delete from '@spectrum-icons/workflow/Delete'
@@ -119,8 +119,15 @@ export default ({
       <View width='100%'>
         <View padding='size-100' backgroundColor='static-white' UNSAFE_style={{ boxSizing: 'border-box' }}>
           <Flex direction='row' justifyContent='space-between'>
-            <View>
-
+            <View flex='1'>
+              <Breadcrumbs showRoot onAction={action => {
+                if (action === 'home') {
+                  history.push('/')
+                }
+              }}>
+                <Item key='home'>Home</Item>
+                <Item key="title">{page.title}</Item>
+              </Breadcrumbs>
             </View>
             <View>
               <Flex gap='size-100'>

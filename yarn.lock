@@ -2431,6 +2431,11 @@
   resolved "https://registry.yarnpkg.com/@spectrum-css/sidenav/-/sidenav-3.0.0-beta.2.tgz#b2431fdaaf8ef06d2c4bfbd3c85fb2ebe6eb7816"
   integrity sha512-0/g/3lROiRnF4fSMBOQyG9V18x8yr49uWFpMeLGTY3pw8dv2LlfQNULAJs3HxXG/egxHmwjVcIlwLbQAziBP1Q==
 
+"@spectrum-css/table@^3.0.0-beta.3":
+  version "3.0.0-beta.3"
+  resolved "https://registry.yarnpkg.com/@spectrum-css/table/-/table-3.0.0-beta.3.tgz#ef018d453078f88880f9efb260ce17a8716e1490"
+  integrity sha512-8Cqrrn59+SLYykjsTOX9NH78d9abKmJqu8EC1/aR1Tj5L3cf7nFD8wQSe79sBcn5bLVOjV6gqTyeUfULsJ7isw==
+
 "@spectrum-icons/ui@^3.1.0":
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@spectrum-icons/ui/-/ui-3.1.0.tgz#15ceb8a98f78f26c10a1045f60a60582f45ae846"
