@@ -7,6 +7,11 @@
   resolved "https://registry.yarnpkg.com/@adobe/react-spectrum-ui/-/react-spectrum-ui-1.0.1.tgz#5fe405d55534e06d3bf060f86a79935cda5f6615"
   integrity sha512-3RSX2hVWo4n7eUAkYBJmEySc5yfyWXLpQLiSKcOSGIXseD/1aUlPQxcYTdgj8gpRmJH7QghmoHeCjRviRfPXyg==
 
+"@adobe/react-spectrum-workflow@^1.0.0":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@adobe/react-spectrum-workflow/-/react-spectrum-workflow-1.0.1.tgz#32537652fb52a6ebf8746ad58268520a04b7f553"
+  integrity sha512-5BM+oJyP4vjmqAV/HSJYLJzR3wDDbEOMUZEEVeKJ81cKyq0aJ6qF9A9tmsW6jb/73cE7PpLr6vb+xqBqTOYsTw==
+
 "@adobe/react-spectrum@^3.1.0":
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@adobe/react-spectrum/-/react-spectrum-3.1.0.tgz#c133f785412f018a5426856014e52085d1e5a05d"
@@ -2432,6 +2437,14 @@
   integrity sha512-pU8tOSBGZIr0XfFcJn8OCMQi+h+51i8644To72iAHsOVEZbgK8KQI5ZIuK/0G6egBAhM41PG9pW8KTL4u++aOQ==
   dependencies:
     "@adobe/react-spectrum-ui" "^1.0.0"
+    "@react-spectrum/icon" "^3.1.0"
+
+"@spectrum-icons/workflow@^3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@spectrum-icons/workflow/-/workflow-3.1.0.tgz#d618eda2906da5d735557546d7e849776e37e821"
+  integrity sha512-Uwl8W61imY4iL0KB9va56EIw73s0AVBVOe+ESABor5WPYPLDO3vffGGvbVvOJQvWqL3WxTAJ5+hOnKO5Q3jI6Q==
+  dependencies:
+    "@adobe/react-spectrum-workflow" "^1.0.0"
     "@react-spectrum/icon" "^3.1.0"
 
 "@svgr/babel-plugin-add-jsx-attribute@^4.2.0":

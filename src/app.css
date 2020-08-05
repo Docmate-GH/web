@@ -4,6 +4,10 @@ html, body, #root {
   height: 100%;
 }
 
+#root > div {
+  height: 100%;
+}
+
 .pointer {
   cursor: pointer;
 }

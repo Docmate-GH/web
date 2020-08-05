@@ -1,13 +1,18 @@
 import * as React from 'react'
 import { useQuery, useMutation } from 'urql'
 import { useFormik } from 'formik'
+import { View, Button, Flex, MenuTrigger, ActionButton, Menu, Item, Text, TextField, ProgressCircle } from '@adobe/react-spectrum'
+
+import More from '@spectrum-icons/workflow/More'
+import Delete from '@spectrum-icons/workflow/Delete'
 
 const GetPage = `
 query($docSlug: String!, $pageSlug: String!) {
   page(
     where: {
       doc_slug: { _eq: $docSlug },
-      slug:{_eq: $pageSlug }
+      slug:{_eq: $pageSlug },
+      deleted_at: {_is_null: true}
     }
   ) {
     id, slug, title, content
@@ -38,8 +43,10 @@ mutation($pageId: uuid!, $input: page_set_input!) {
 
 const DeletePage = `
 mutation($pageId: uuid!) {
-  delete_page_by_pk(id: $pageId) {
-    id, slug
+  update_page_by_pk (_set:{
+    deleted_at: "now()"
+  }, pk_columns:{id: $pageId}) {
+    id
   }
 }
 `
@@ -66,6 +73,7 @@ export default ({
       content: getPageResult.data?.page[0]?.content
     },
     async onSubmit(values) {
+      console.log(values)
       const res = await editPage({
         pageId: getPageResult.data.page[0].id,
         input: {
@@ -101,26 +109,114 @@ export default ({
 
   const page = getPageResult.data.page[0]!
 
+  async function onClickSave() {
+    const values = await mainForm.submitForm()
+    console.log(values)
+  }
+
+  return (
+    <View>
+      <View width='100%'>
+        <View padding='size-100' backgroundColor='static-white' UNSAFE_style={{ boxSizing: 'border-box' }}>
+          <Flex direction='row' justifyContent='space-between'>
+            <View>
+
+            </View>
+            <View>
+              <Flex gap='size-100'>
+                <View>
+                  <Button variant='cta' onPress={onClickSave} isDisabled={editPageResult.fetching}>
+                    {editPageResult.fetching && <ProgressCircle size='S' isIndeterminate aria-label='saving' marginEnd='size-100' />}
+                    <Text>Save</Text>
+                  </Button>
+                </View>
+
+                <View>
+                  <MenuTrigger align='start'>
+                    <ActionButton>
+                      <More />
+                    </ActionButton>
+                    <Menu onAction={key => {
+                      if (key === 'delete') {
+                        onClickDelete(page)
+                      }
+                    }}>
+                      <Item key='delete' >
+                        <Delete size='S' />
+                        <Text>Delete</Text>
+                      </Item>
+                    </Menu>
+                  </MenuTrigger>
+                </View>
+              </Flex>
+
+            </View>
+          </Flex>
+        </View>
+      </View>
+
+      <View width='960px' margin='0 auto' backgroundColor='static-white' marginY='size-500' padding='size-500'>
+        <form onSubmit={mainForm.handleSubmit}>
+          <TextField onChange={content => mainForm.setFieldValue('title', content)} value={mainForm.values.title} label='Title' isQuiet width='100%' />
+
+          <View marginY='size-500'>
+            <Editor id={page.id} onChange={content => mainForm.setFieldValue('content', content)} value={page.content} />
+          </View>
+        </form>
+      </View>
+    </View>
+  )
+}
+
+
+declare var CodeMirror: any
+function Editor(props: {
+  id: string,
+  value: string,
+  onChange?: (content: string) => void
+}) {
+
+  const container = React.useRef(null as HTMLDivElement | null)
+
+  const cm = React.useRef(null as any)
+
+  React.useLayoutEffect(() => {
+    const $container = container.current!
+
+    const codeMirror = CodeMirror((elt) => {
+      console.log(elt)
+      $container.parentNode.replaceChild(elt, $container)
+    }, {
+      value: props.value || '',
+      lineWrapping: true,
+      mode: 'markdown'
+    })
+
+    codeMirror.on('change', () => {
+      if (props.onChange) {
+        props.onChange(codeMirror.getValue())
+      }
+    })
+
+    cm.current = codeMirror
+  }, [])
+
+  React.useEffect(() => {
+    if (cm.current) {
+      cm.current.setValue(props.value)
+      cm.current.clearHistory()
+    }
+  }, [props.id])
+
+  // React.useEffect(() => {
+  //   if (cm.current && props.value) {
+  //     cm.current.setValue(props.value)
+  //   }
+  // }, [props.value])
+
   return (
     <div>
-      <form onSubmit={mainForm.handleSubmit}>
-        <div>
-          <label htmlFor="title">Title</label>
-          <input onChange={mainForm.handleChange} name="title" type="text" value={mainForm.values.title} />
-        </div>
-
-        <div>
-          <textarea onChange={mainForm.handleChange} name="content" id="content" value={mainForm.values.content}></textarea>
-        </div>
-
-        <div>
-          <button type='submit'>save</button>
-        </div>
-      </form>
-
-      <div>
-        <button onClick={_ => onClickDelete(page)}>delete</button>
-      </div>
+      <div style={{ minHeight: '600px' }} ref={container}></div>
     </div>
   )
 }

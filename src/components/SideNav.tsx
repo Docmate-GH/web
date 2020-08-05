@@ -30,6 +30,6 @@ export function SideNavHead(props: {
 
 export function SideNavItemLink(props) {
   return (
-    <a className='spectrum-SideNav-itemLink'>{props.children}</a>
+    <a onClick={props.onClick} className='spectrum-SideNav-itemLink'>{props.children}</a>
   )
 }

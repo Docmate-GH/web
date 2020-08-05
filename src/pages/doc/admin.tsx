@@ -19,7 +19,11 @@ type GetDocByIdResult = {
 const GetDocBySlug = `
 query($docSlug: String!) {
   doc_by_pk(slug: $docSlug) {
-    title, slug, pages {
+    title, slug, pages(
+      where: {
+        deleted_at: { _is_null: true }
+      }
+    ) {
       slug, title
     }
   }
@@ -42,7 +46,8 @@ mutation ($object: page_insert_input!) {
 
 function DocAdmin({
   match,
-  history
+  history,
+  children
 }) {
   const { docSlug } = match.params
 
@@ -92,7 +97,7 @@ function DocAdmin({
               Doc
             </SideNavHead>
             <SideNavItem>
-              <SideNavItemLink>Open Doc</SideNavItemLink>
+              <SideNavItemLink onClick={_ => window.open(`http://localhost:3000/docs/${doc.slug}`)}>Open Doc</SideNavItemLink>
             </SideNavItem>
             <SideNavItem>
               <SideNavItemLink>Settings</SideNavItemLink>
@@ -106,7 +111,7 @@ function DocAdmin({
             {doc.pages.map(page => {
               return (
                 <SideNavItem key={page.id}>
-                  <SideNavItemLink>{page.title}</SideNavItemLink>
+                  <SideNavItemLink onClick={_ => history.push(`/doc/${doc.slug}/${page.slug}`)}>{page.title}</SideNavItemLink>
                 </SideNavItem>
               )
             })}
@@ -115,13 +120,13 @@ function DocAdmin({
         </SideNav>
 
         <View UNSAFE_className='text-center' paddingY='size-100' >
-          <Button variant='cta'>New Page</Button>
+          <Button variant='cta' onPress={onCreateNewPage} >New Page</Button>
         </View>
       </View>
 
 
-      <View backgroundColor='static-white' width='100%'>
-        Hello
+      <View flex margin='0 auto'>
+        {children}
       </View>
 
       {/* <div>
