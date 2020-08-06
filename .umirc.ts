@@ -1,6 +1,8 @@
 import routes from './routes'
 
 export default {
+  title: 'Docmate',
+  
   proxy: {
     '/graphql': {
       target: 'http://localhost:8080/v1/graphql',

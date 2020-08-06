@@ -113,61 +113,51 @@ export default ({
   }
 
   return (
-    <View>
-      <View width='100%'>
-        <View padding='size-100' backgroundColor='static-white' UNSAFE_style={{ boxSizing: 'border-box' }}>
-          <Flex direction='row' justifyContent='space-between'>
-            <View flex='1'>
-              <Breadcrumbs onAction={key => {
-                if (key === 'home') {
-                  history.push('/')
-                }
-              }}>
-                <Item key="home">Home</Item>
-                <Item key="title">{page.title}</Item>
-              </Breadcrumbs>
-            </View>
-            <View>
-              <Flex gap='size-100'>
-                <View>
-                  <Button variant='cta' onPress={onClickSave} isDisabled={editPageResult.fetching}>
-                    {editPageResult.fetching && <ProgressCircle size='S' isIndeterminate aria-label='saving' marginEnd='size-100' />}
-                    <Text>Save</Text>
-                  </Button>
-                </View>
+    <View paddingY='size-500'>
+      <View padding='size-500' width='960px' margin='0 auto' backgroundColor='static-white' UNSAFE_style={{ boxSizing: 'border-box' }}>
+        <View width='100%'>
+          <View padding='size-100' backgroundColor='static-white' UNSAFE_style={{ boxSizing: 'border-box' }}>
+            <Flex direction='row' justifyContent='space-between'>
+              <View flex='1'>
+              </View>
+              <View>
+                <Flex gap='size-100'>
+                  <View>
+                    <Button variant='cta' onPress={onClickSave} isDisabled={editPageResult.fetching}>
+                      {editPageResult.fetching && <ProgressCircle size='S' isIndeterminate aria-label='saving' marginEnd='size-100' />}
+                      <Text>Save</Text>
+                    </Button>
+                  </View>
 
-                <View>
-                  <MenuTrigger align='start'>
-                    <ActionButton>
-                      <More />
-                    </ActionButton>
-                    <Menu onAction={key => {
-                      if (key === 'delete') {
-                        onClickDelete(page)
-                      }
-                    }}>
-                      <Item key='delete' >
-                        <Delete size='S' />
-                        <Text>Delete</Text>
-                      </Item>
-                    </Menu>
-                  </MenuTrigger>
-                </View>
-              </Flex>
+                  <View>
+                    <MenuTrigger align='start'>
+                      <ActionButton>
+                        <More />
+                      </ActionButton>
+                      <Menu onAction={key => {
+                        if (key === 'delete') {
+                          onClickDelete(page)
+                        }
+                      }}>
+                        <Item key='delete' >
+                          <Delete size='S' />
+                          <Text>Delete</Text>
+                        </Item>
+                      </Menu>
+                    </MenuTrigger>
+                  </View>
+                </Flex>
 
-            </View>
-          </Flex>
-        </View>
-      </View>
-
-      <View width='960px' margin='0 auto' backgroundColor='static-white' marginY='size-500' padding='size-500'>
-        <form onSubmit={mainForm.handleSubmit}>
-          <TextField onChange={content => mainForm.setFieldValue('title', content)} value={mainForm.values.title} label='Title' isQuiet width='100%' />
-
-          <View marginY='size-500'>
-            <Editor id={page.id} onChange={content => mainForm.setFieldValue('content', content)} value={page.content} />
+              </View>
+            </Flex>
           </View>
-        </form>
+        </View>
+
+        <TextField onChange={content => mainForm.setFieldValue('title', content)} value={mainForm.values.title} label='Title' isQuiet width='100%' />
+
+        <View marginY='size-300'>
+          <Editor id={page.id} onChange={content => mainForm.setFieldValue('content', content)} value={page.content} />
+        </View>
       </View>
     </View>
   )
@@ -202,6 +192,8 @@ function Editor(props: {
         props.onChange(codeMirror.getValue())
       }
     })
+
+    codeMirror.setSize('100%', '600px')
 
     cm.current = codeMirror
   }, [])

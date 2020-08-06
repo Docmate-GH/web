@@ -68,12 +68,12 @@ function Page({
   const [allDocsResult, getAllDocs] = useQuery<GetAllDocsResult>({ query: GetAllDocs })
   const [createDocResult, createDoc] = useMutation<CreateDocResult>(CreateDoc)
 
-  const createDocFormValues = React.useRef({} as { title: string })
+  const createDocFormValues = React.useRef({ title: '' } as { title: string })
 
   const CreateDocTrigger = React.useCallback(() => {
     return (
       <DialogTrigger>
-        <Button variant='overBackground' >Create doc</Button >
+        <Button variant='primary' >Create doc</Button >
 
         {close => {
           return (
@@ -125,7 +125,7 @@ function Page({
 
   return (
     <div>
-      <View backgroundColor='gray-900' paddingY='size-150'>
+      <View paddingY='size-150'>
         <Flex direction='row' justifyContent='center'>
           <Flex direction='row' width='960px' justifyContent='space-between'>
             <View>

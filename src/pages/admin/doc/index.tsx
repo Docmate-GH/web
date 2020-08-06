@@ -2,7 +2,7 @@ import * as React from 'react'
 import { useQuery, useMutation } from 'urql'
 import { nanoid } from 'nanoid'
 import {
-  Grid, View, Flex, ListBox, Section, Item, Button
+  Grid, View, Flex, ListBox, Section, Item, Button, Text, Heading, Link, ActionButton
 } from '@adobe/react-spectrum'
 import SideNav, { SideNavItem, SideNavItemLink, SideNavHead } from '../../../components/SideNav'
 type GetDocByIdResult = {
@@ -87,73 +87,77 @@ function DocAdmin({
     }
   }
 
+  function openDoc() {
+    window.open(`http://localhost:3000/docs/${doc.id}`)
+  }
+
+  function goSettings() {
+    history.push(`/admin/doc/${docId}`)
+  }
+
   return (
+    <>
+      <Flex direction='column' height='100%'>
+        <View backgroundColor='static-white'>
+          <Flex height='size-600' justifyContent='space-between'>
+            <Flex flex='1'>
+              <View alignSelf='center' paddingStart='size-200'>
+                <Heading level={3} UNSAFE_style={{ cursor: 'pointer' }}>
+                  <div onClick={_ => history.push('/')}>
+                    Docmate
+                  </div>
+                </Heading>
+              </View>
+            </Flex>
+            <Flex justifyContent='center' flex='1'>
+              <Heading level={3} alignSelf='center'>
+                {doc.title}
+              </Heading>
+            </Flex>
 
-    <Flex direction='row' minHeight='100%'>
-      <View backgroundColor='static-white' padding='size-200' width='size-3000'>
-        <SideNav>
-          <SideNavItem>
-            <SideNavHead>
-              Doc
-            </SideNavHead>
-            <SideNavItem>
-              <SideNavItemLink onClick={_ => window.open(`http://localhost:3000/docs/${doc.id}`)}>Open Doc</SideNavItemLink>
-            </SideNavItem>
-            <SideNavItem>
-              <SideNavItemLink>Settings</SideNavItemLink>
-            </SideNavItem>
-          </SideNavItem>
-
-          <SideNavItem>
-            <SideNavHead>
-              Pages
-            </SideNavHead>
-            {doc.pages.map(page => {
-              return (
-                <SideNavItem key={page.id}>
-                  <SideNavItemLink onClick={_ => history.push(`/admin/doc/${doc.id}/page/${page.slug}`)}>{page.title}</SideNavItemLink>
-                </SideNavItem>
-              )
-            })}
-          </SideNavItem>
-
-        </SideNav>
-
-        <View UNSAFE_className='text-center' paddingY='size-100' >
-          <Button variant='cta' onPress={onCreateNewPage} >New Page</Button>
+            <Flex justifyContent='end' marginEnd='size-100' flex='1'>
+              <Button alignSelf='center' variant='cta' onPress={openDoc} >Open Doc</Button>
+            </Flex>
+          </Flex>
         </View>
-      </View>
+        <Flex direction='row' flex='1' UNSAFE_style={{ overflow: 'scroll' }}>
+          <View backgroundColor='static-white' paddingX='size-200' width='size-3000' UNSAFE_style={{ boxSizing: 'border-box' }}>
+            <SideNav>
+              <SideNavItem>
+                <SideNavHead>
+                  Doc
+            </SideNavHead>
+                <SideNavItem>
+                  <SideNavItemLink onClick={goSettings}>Settings</SideNavItemLink>
+                </SideNavItem>
+              </SideNavItem>
 
+              <SideNavItem>
+                <SideNavHead>
+                  Pages
+            </SideNavHead>
+                {doc.pages.map(page => {
+                  return (
+                    <SideNavItem key={page.id}>
+                      <SideNavItemLink onClick={_ => history.push(`/admin/doc/${doc.id}/page/${page.slug}`)}>{page.title}</SideNavItemLink>
+                    </SideNavItem>
+                  )
+                })}
+              </SideNavItem>
 
-      <View flex margin='0 auto'>
-        {children}
-      </View>
+            </SideNav>
 
-      {/* <div>
-        <a onClick={_ => window.open(`http://localhost:3000/docs/${doc.slug}`, '_blank')}>open</a>
+            <View UNSAFE_className='text-center' paddingY='size-100' >
+              <ActionButton onPress={onCreateNewPage} >New Page</ActionButton>
+            </View>
+          </View>
 
-      </div>
-
-      <div>
-        {doc.pages.map(page => {
-          function goPageEdit() {
-            history.push(`/doc/${doc.slug}/${page.slug}`)
-          }
-          return (
-            <div key={page.id}>
-              <a onClick={goPageEdit}>{page.title}</a>
-            </div>
-          )
-        })}
-      </div>
-
-      <div>
-        <button onClick={onCreateNewPage}>
-          create new page
-
-        </button>
-      </div> */}
-    </Flex>
+          <View overflow='scroll' flex='1'>
+            {children}
+          </View>
+        </Flex>
+      </Flex>
+    </>
   )
 }
 
