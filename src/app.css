@@ -1,17 +1,13 @@
 @import '~normalize.css';
 
-html, body, #root {
-  height: 100%;
-}
-
-#root > div {
-  height: 100%;
-}
-
 .pointer {
   cursor: pointer;
 }
 
 .text-center {
   text-align: center;
+}
+
+.rounded {
+  border-radius: 4px;
 }

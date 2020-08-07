@@ -6,6 +6,8 @@ import {
 } from '@adobe/react-spectrum'
 import SideNav, { SideNavItem, SideNavItemLink, SideNavHead } from '../../../components/SideNav'
 import { GetDocByIdResult, GetDocById, CreatePageResult, CreatePage } from '../../../gql'
+import Footer from '../../../components/Footer'
+
 function DocAdmin({
   match,
   history,
@@ -61,63 +63,74 @@ function DocAdmin({
     <>
       <Flex direction='column' height='100%'>
         <View backgroundColor='static-white'>
-          <Flex height='size-600' justifyContent='space-between'>
-            <Flex flex='1'>
-              <View alignSelf='center' paddingStart='size-200'>
-                <Heading level={3} UNSAFE_style={{ cursor: 'pointer' }}>
-                  <div onClick={_ => history.push('/')}>
-                    Docmate
+          <Flex justifyContent='center'>
+            <Flex height='size-600' width='960px' justifyContent='space-between'>
+              <Flex flex='1'>
+                <View alignSelf='center' paddingStart='size-200'>
+                  <Heading level={3} UNSAFE_style={{ cursor: 'pointer' }}>
+                    <div onClick={_ => history.push('/')}>
+                      Docmate
                   </div>
+                  </Heading>
+                </View>
+              </Flex>
+              <Flex justifyContent='center' flex='1'>
+                <Heading level={3} alignSelf='center'>
+                  {doc.team.title} / {doc.title}
                 </Heading>
-              </View>
-            </Flex>
-            <Flex justifyContent='center' flex='1'>
-              <Heading level={3} alignSelf='center'>
-                {doc.team.title} / {doc.title}
-              </Heading>
-            </Flex>
+              </Flex>
 
-            <Flex justifyContent='end' marginEnd='size-100' flex='1'>
-              <Button alignSelf='center' variant='cta' onPress={openDoc} >Open Doc</Button>
+              <Flex justifyContent='end' marginEnd='size-100' flex='1'>
+                <Button alignSelf='center' variant='secondary' onPress={openDoc} >Open Doc</Button>
+              </Flex>
             </Flex>
           </Flex>
         </View>
-        <Flex direction='row' flex='1' UNSAFE_style={{ overflow: 'scroll' }}>
-          <View backgroundColor='static-white' paddingX='size-200' width='size-3000' UNSAFE_style={{ boxSizing: 'border-box' }}>
-            <SideNav>
-              <SideNavItem>
-                <SideNavHead>
-                  Doc
-            </SideNavHead>
-                <SideNavItem>
-                  <SideNavItemLink onClick={goSettings}>Settings</SideNavItemLink>
-                </SideNavItem>
-              </SideNavItem>
 
-              <SideNavItem>
-                <SideNavHead>
-                  Pages
+        <Flex justifyContent='center'>
+          <Flex width='960px'>
+            <View>
+              <View UNSAFE_className='rounded' backgroundColor='static-white' width='size-3000' marginY='size-200' paddingX='size-200' paddingY='size-200' UNSAFE_style={{ boxSizing: 'border-box' }}>
+                <SideNav>
+                  <SideNavItem>
+                    <SideNavHead>
+                      Doc
             </SideNavHead>
-                {doc.pages.map(page => {
-                  return (
-                    <SideNavItem key={page.id}>
-                      <SideNavItemLink onClick={_ => history.push(`/admin/doc/${doc.id}/page/${page.slug}`)}>{page.title}</SideNavItemLink>
+                    <SideNavItem>
+                      <SideNavItemLink onClick={goSettings}>Settings</SideNavItemLink>
                     </SideNavItem>
-                  )
-                })}
-              </SideNavItem>
+                  </SideNavItem>
 
-            </SideNav>
+                  <SideNavItem>
+                    <SideNavHead>
+                      Pages
+            </SideNavHead>
+                    {doc.pages.map(page => {
+                      return (
+                        <SideNavItem key={page.id}>
+                          <SideNavItemLink onClick={_ => history.push(`/admin/doc/${doc.id}/page/${page.slug}`)}>{page.title}</SideNavItemLink>
+                        </SideNavItem>
+                      )
+                    })}
+                  </SideNavItem>
 
-            <View UNSAFE_className='text-center' paddingY='size-100' >
-              <ActionButton onPress={onCreateNewPage} >New Page</ActionButton>
+                </SideNav>
+
+                <View UNSAFE_className='text-center' paddingY='size-100' >
+                  <ActionButton onPress={onCreateNewPage} >New Page</ActionButton>
+                </View>
+              </View>
+
             </View>
-          </View>
 
-          <View overflow='scroll' flex='1'>
-            {children}
-          </View>
+
+            <View overflow='scroll' flex='1' margin='size-200'>
+              {React.cloneElement(children, { doc })}
+            </View>
+          </Flex>
         </Flex>
+
+        <Footer />
       </Flex>
     </>
   )

@@ -15,6 +15,10 @@ export default [
         component: 'admin/doc/index',
         routes: [
           {
+            path: '/admin/doc/:docId',
+            component: 'admin/doc/settings'
+          },
+          {
             path: '/admin/doc/:docId/page/:pageSlug',
             component: 'admin/doc/page'
           }

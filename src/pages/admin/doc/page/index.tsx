@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { useQuery, useMutation } from 'urql'
 import { useFormik } from 'formik'
-import { View, Button, Flex, MenuTrigger, ActionButton, Menu, Item, Text, TextField, ProgressCircle, Breadcrumbs } from '@adobe/react-spectrum'
+import { View, Button, Form, Flex, MenuTrigger, ActionButton, Menu, Item, Text, TextField, ProgressCircle, Breadcrumbs } from '@adobe/react-spectrum'
 
 import More from '@spectrum-icons/workflow/More'
 import Delete from '@spectrum-icons/workflow/Delete'
@@ -113,51 +113,54 @@ export default ({
   }
 
   return (
-    <View paddingY='size-500'>
-      <View padding='size-500' width='960px' margin='0 auto' backgroundColor='static-white' UNSAFE_style={{ boxSizing: 'border-box' }}>
-        <View width='100%'>
-          <View padding='size-100' backgroundColor='static-white' UNSAFE_style={{ boxSizing: 'border-box' }}>
-            <Flex direction='row' justifyContent='space-between'>
-              <View flex='1'>
-              </View>
-              <View>
-                <Flex gap='size-100'>
-                  <View>
-                    <Button variant='cta' onPress={onClickSave} isDisabled={editPageResult.fetching}>
-                      {editPageResult.fetching && <ProgressCircle size='S' isIndeterminate aria-label='saving' marginEnd='size-100' />}
-                      <Text>Save</Text>
-                    </Button>
-                  </View>
+    <View>
+      <View>
+        <View padding='size-200' backgroundColor='static-white' UNSAFE_style={{ boxSizing: 'border-box' }}>
+          <Flex direction='row' justifyContent='space-between'>
+            <View flex='1'>
+            </View>
+            <View>
+              <Flex gap='size-100'>
+                <View>
+                  <Button variant='cta' onPress={onClickSave} isDisabled={editPageResult.fetching}>
+                    {editPageResult.fetching && <ProgressCircle size='S' isIndeterminate aria-label='saving' marginEnd='size-100' />}
+                    <Text>Save</Text>
+                  </Button>
+                </View>
 
-                  <View>
-                    <MenuTrigger align='start'>
-                      <ActionButton>
-                        <More />
-                      </ActionButton>
-                      <Menu onAction={key => {
-                        if (key === 'delete') {
-                          onClickDelete(page)
-                        }
-                      }}>
-                        <Item key='delete' >
-                          <Delete size='S' />
-                          <Text>Delete</Text>
-                        </Item>
-                      </Menu>
-                    </MenuTrigger>
-                  </View>
-                </Flex>
+                <View>
+                  <MenuTrigger align='start'>
+                    <ActionButton>
+                      <More />
+                    </ActionButton>
+                    <Menu onAction={key => {
+                      if (key === 'delete') {
+                        onClickDelete(page)
+                      }
+                    }}>
+                      <Item key='delete' >
+                        <Delete size='S' />
+                        <Text>Delete</Text>
+                      </Item>
+                    </Menu>
+                  </MenuTrigger>
+                </View>
+              </Flex>
 
-              </View>
-            </Flex>
-          </View>
+            </View>
+          </Flex>
         </View>
+      </View>
 
-        <TextField onChange={content => mainForm.setFieldValue('title', content)} value={mainForm.values.title} label='Title' isQuiet width='100%' />
+      <View backgroundColor='static-white' paddingX='size-200'>
+        <Form>
+          <TextField onChange={content => mainForm.setFieldValue('title', content)} value={mainForm.values.title} label='Title' isQuiet width='100%' />
+        </Form>
+      </View>
 
-        <View marginY='size-300'>
-          <Editor id={page.id} onChange={content => mainForm.setFieldValue('content', content)} value={page.content} />
-        </View>
+
+      <View padding='size-200' backgroundColor='static-white'>
+        <Editor id={page.id} onChange={content => mainForm.setFieldValue('content', content)} value={page.content} />
       </View>
     </View>
   )

@@ -10,6 +10,7 @@ import { View, Flex, Button, Text, IllustratedMessage, Link, Heading, Content, D
 import Table, { TableHead, TableBody, TableHeadCell, TableRow, TableCell } from '../components/Table'
 import { userService } from '../service'
 import { SignInResult, SignIn, SignUpResult, SignUp, GetUserTeams, GetUserTeamsResult, GetTeamDocsResult, GetTeamDocs, CreateDocResult, CreateDoc } from '../gql'
+import AppFooter from '../components/Footer'
 
 function CreateDocTrigger({
   teams
@@ -346,6 +347,8 @@ function Layout({
           {userService.isLogin() && <DocsPannel teams={teams} />}
         </View>
       </View>
+
+      <AppFooter />
     </div>
   )
 }

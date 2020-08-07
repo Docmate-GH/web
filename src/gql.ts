@@ -86,6 +86,7 @@ export type GetDocByIdResult = {
       title: string,
       id: string
     },
+    default_page?: string
     pages: {
       id: string,
       slug: string,
@@ -98,7 +99,7 @@ query($docId: uuid!) {
   doc_by_pk(id: $docId) {
     team {
       title, id
-    },
+    }, default_page, 
     id, title, pages(
       where: {
         deleted_at: { _is_null: true }
@@ -120,6 +121,28 @@ export const CreatePage = `
 mutation ($object: page_insert_input!) {
   insert_page_one(object: $object) {
     id, slug
+  }
+}
+`
+
+export type UpdateDocParams = {
+  docId: string,
+  input: {
+    title?: string,
+    default_page?: string
+  }
+}
+export type UpdateDocResult = {
+  update_doc_by_pk: {
+    id: string
+  }
+}
+export const UpdateDoc = `
+mutation ($docId: uuid!, $input: doc_set_input!) {
+  update_doc_by_pk(_set: $input, pk_columns: {
+    id: $docId
+  }) {
+    id
   }
 }
 `
