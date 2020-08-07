@@ -5,171 +5,106 @@ import client from '../client'
 import { history } from 'umi'
 import * as utils from '../utils'
 import { useFormik } from 'formik'
-
-import { View, Flex, Button, Text, IllustratedMessage, Heading, Content, DialogTrigger, ActionButton, Dialog, Divider, ButtonGroup, Form, TextField, RadioGroup, Radio } from '@adobe/react-spectrum'
+import * as yup from 'yup'
+import { View, Flex, Button, Text, IllustratedMessage, Link, Heading, Content, DialogTrigger, Footer, ActionButton, Dialog, Divider, ButtonGroup, Form, TextField, RadioGroup, Radio, Header, MenuTrigger, Menu, Item, Picker } from '@adobe/react-spectrum'
 import Table, { TableHead, TableBody, TableHeadCell, TableRow, TableCell } from '../components/Table'
+import { userService } from '../service'
+import { SignInResult, SignIn, SignUpResult, SignUp, GetUserTeams, GetUserTeamsResult, GetTeamDocsResult, GetTeamDocs, CreateDocResult, CreateDoc } from '../gql'
 
-type GetAllDocsResult = {
-  doc: {
-    id: string,
-    title: string,
-    created_at: string
-  }[]
-}
-const GetAllDocs = `
-query {
-  doc {
-    id, title, created_at
-  }
-}
-`
-
-type CreateDocResult = {
-  insert_doc_one: {
-    id: string
-  }
-}
-const CreateDoc = `
-mutation($title: String!) {
-  insert_doc_one(object: {
-    title:$title
-  }) {
-    id
-  }
-}
-`
-
-function CreateDocForm(props: {
-  onChange: (values: { title: string }) => void
+function CreateDocTrigger({
+  teams
+}: {
+  teams: GetUserTeamsResult['user_team']
 }) {
-
-  const [ title, setTitle ] = React.useState('')
-
-  React.useEffect(() => {
-    props.onChange({ title })
-  }, [title])
-
-  return (
-    <Form isQuiet>
-      <TextField value={title} onChange={value => setTitle(value)} label='Doc Title' isRequired />
-
-      <RadioGroup label='Template' orientation='horizontal' defaultValue='docute'>
-        <Radio value='docute'>Docute</Radio>
-        <Radio isDisabled value='docsify'>Docsify (comming soon...)</Radio>
-      </RadioGroup>
-    </Form>
-  )
-}
-
-function Page({
-  history
-}) {
-
-  const [allDocsResult, getAllDocs] = useQuery<GetAllDocsResult>({ query: GetAllDocs })
   const [createDocResult, createDoc] = useMutation<CreateDocResult>(CreateDoc)
 
-  const createDocFormValues = React.useRef({ title: '' } as { title: string })
+  const form = useFormik({
+    initialValues: {
+      title: '',
+      teamId: teams[0]?.team.id || ''
+    },
+    async onSubmit(values) {
+      const result = await createDoc({
+        title: values.title,
+        teamId: values.teamId
+      })
 
-  const CreateDocTrigger = React.useCallback(() => {
-    return (
-      <DialogTrigger>
-        <Button variant='primary' >Create doc</Button >
-
-        {close => {
-          return (
-            <Dialog>
-              <Heading>Create a doc</Heading>
-              <Divider />
-              <Content>
-                <View>
-                  <CreateDocForm onChange={values => { createDocFormValues.current = values }} />
-                </View>
-              </Content>
-
-              <ButtonGroup>
-                <Button variant='secondary' onPress={close}>Cancel</Button>
-                <Button variant='cta' onPress={async _ => {
-                  const createDocResult = await createDoc({
-                    title: createDocFormValues.current.title
-                  })
-                  if (createDocResult.data?.insert_doc_one.id) {
-                    history.push(`/admin/doc/${createDocResult.data.insert_doc_one.id}`)
-                  } else {
-                    // TODO: create page error
-                  }
-                }}>Create</Button>
-              </ButtonGroup>
-            </Dialog>
-          )
-        }}
-      </DialogTrigger>
-    )
-  }, [])
+      if (result.data?.insert_doc_one.id) {
+        history.push(`/admin/doc/${result.data.insert_doc_one.id}`)
+      } else {
+        // TODO: create page error
+      }
+    }
+  })
 
   React.useEffect(() => {
-    getAllDocs()
-  }, [])
-
-  if (allDocsResult.fetching) {
-    return <div>Fetching...</div>
-  }
-
-  if (allDocsResult.error) {
-    console.log(allDocsResult.error)
-    return <div>Error...</div>
-  }
-
-  function onClickDoc(doc: GetAllDocsResult['doc'][0]) {
-    history.push(`/admin/doc/${doc.id}`)
-  }
+    if (teams.length > 0 && !form.values.teamId) {
+      form.setFieldValue('teamId', teams[0].team.id)
+    }
+  }, [teams])
 
   return (
-    <div>
-      <View paddingY='size-150'>
-        <Flex direction='row' justifyContent='center'>
-          <Flex direction='row' width='960px' justifyContent='space-between'>
-            <View>
+    <DialogTrigger>
+      <Button variant='primary' >Create doc</Button >
 
-            </View>
-
-            <View>
-              <CreateDocTrigger />
-            </View>
-
-          </Flex>
-        </Flex>
-      </View>
+      {close => {
+        return (
+          <Dialog>
+            <Heading>Create a doc</Heading>
+            <Divider />
+            <Content>
 
 
-      <Docs docs={allDocsResult.data.doc} onClickDoc={onClickDoc} />
-    </div>
+              <View>
+                <Form isQuiet>
+                  <Flex gap='size-100'>
+                    <View flex={1}>
+                      <Picker onSelectionChange={utils.setFieldValue(form, 'teamId')} selectedKey={form.values.teamId} label='Team' placeholder='Team' isQuiet={false} width='size-1700'>
+                        {teams.map(team => {
+                          return (
+                            <Item key={team.team.id}>{team.team.title}</Item>
+                          )
+                        })}
+                      </Picker>
+                    </View>
+                    <View flex={7}>
+                      <TextField width='100%' value={form.values.title} onChange={utils.setFieldValue(form, 'title')} label='Doc Title' isRequired />
+                    </View>
+                  </Flex>
+
+                  <RadioGroup label='Template' orientation='horizontal' defaultValue='docute'>
+                    <Radio value='docute'>Docute</Radio>
+                    <Radio isDisabled value='docsify'>Docsify (comming soon...)</Radio>
+                  </RadioGroup>
+
+                </Form>
+              </View>
+            </Content>
+
+            <ButtonGroup>
+              <Button variant='secondary' onPress={close}>Cancel</Button>
+              <Button variant='cta' onPress={form.submitForm}>Create</Button>
+            </ButtonGroup>
+          </Dialog>
+        )
+      }}
+    </DialogTrigger>
   )
 }
-
 
 function Docs({
   docs,
   onClickDoc
 }: {
-  docs: GetAllDocsResult['doc'],
-  onClickDoc?: (doc: GetAllDocsResult['doc'][0]) => void
+  docs: GetTeamDocsResult['doc'],
+  onClickDoc?: (doc: GetTeamDocsResult['doc'][0]) => void
 }) {
 
   return (
     <div>
       <Flex justifyContent='center'>
-        <View width='960px' paddingY='size-500'>
-
-          {docs.length === 0 && (
-            <View paddingY='size-500'>
-              <IllustratedMessage>
-                <Button variant='cta'>Create Doc</Button>
-              </IllustratedMessage>
-            </View>
-          )
-          }
-
-          {docs.length > 0 && <Table>
+        <View width='960px' paddingY='size-100'>
+          <Table>
             <TableHead>
               <TableHeadCell>
                 <Text>Doc</Text>
@@ -197,7 +132,7 @@ function Docs({
               })}
             </TableBody>
 
-          </Table>}
+          </Table>
         </View>
       </Flex>
 
@@ -205,4 +140,257 @@ function Docs({
   )
 }
 
-export default Page
+function Layout({
+  history
+}) {
+
+  const [isSignUpDialog, setIsSignupDialog] = React.useState(true)
+
+  const [getUserTeamsResult, getUserTeams] = useQuery<GetUserTeamsResult>({ query: GetUserTeams })
+
+  const teams = getUserTeamsResult.data ? getUserTeamsResult.data.user_team : []
+
+  React.useEffect(() => {
+    getUserTeams()
+  }, [])
+
+  function SignInDialog({ close }) {
+
+    const [signInResult, signIn] = useMutation<SignInResult>(SignIn)
+
+    const form = useFormik({
+      initialValues: {
+        email: '',
+        password: ''
+      },
+      async onSubmit(values) {
+        const result = await signIn({
+          email: values.email,
+          password: values.password
+        })
+        if (!result.error) {
+          const signInData = result.data!.signIn
+          userService.saveToken(signInData.token)
+          userService.saveUserInfo({
+            email: signInData.email,
+            id: signInData.id,
+            avatar: signInData.avatar,
+            username: signInData.username
+          })
+          location.reload()
+        }
+      }
+    })
+
+    function onClickSignIn() {
+      form.submitForm()
+    }
+
+    return (
+      <Dialog>
+        <Heading>
+          Sign In
+      </Heading>
+
+        <Header>
+          <Link onPress={_ => setIsSignupDialog(true)}>
+            <a >Don't have account</a>
+          </Link>
+        </Header>
+
+        <Divider />
+
+        <Content>
+          <Form isQuiet>
+            <TextField value={form.values.email} onChange={utils.setFieldValue(form, 'email')} label='email' placeholder='john@example.com' />
+            <TextField type='password' value={form.values.password} onChange={utils.setFieldValue(form, 'password')} label='password' />
+          </Form>
+        </Content>
+
+        <ButtonGroup>
+          <Button variant='secondary' onPress={close}>Cancel</Button>
+          <Button variant='cta' onPress={onClickSignIn}>Sign In</Button>
+        </ButtonGroup>
+      </Dialog>
+    )
+  }
+
+  function SignUpDialog({ close }) {
+
+    const [signupResult, signUp] = useMutation<SignUpResult>(SignUp)
+
+    const form = useFormik({
+      initialValues: {
+        password: '',
+        password_confirm: '',
+        email: ''
+      },
+      validationSchema() {
+        return yup.object().shape({
+          password: yup.string().required(),
+          password_confirm: yup.string().required(),
+          email: yup.string().required()
+        })
+      },
+      async onSubmit(values) {
+        const result = await signUp({
+          email: values.email,
+          password: values.password.toString(),
+          password_confirm: values.password_confirm.toString()
+        })
+
+        if (!result.error) {
+          close()
+        }
+      }
+    })
+
+    async function onClickSignUp() {
+      await form.submitForm()
+    }
+
+    return (
+      <Dialog>
+        <Heading>
+          Sign Up
+      </Heading>
+
+        <Header>
+          <Link onPress={_ => setIsSignupDialog(false)}>
+            <a>Already have account</a>
+          </Link>
+        </Header>
+
+        <Divider />
+
+        <Content>
+          <Form isQuiet>
+            <TextField validationState={form.errors.email ? 'invalid' : 'valid'} value={form.values.email} onChange={utils.setFieldValue(form, 'email')} label='email' placeholder='john@example.com' />
+            <TextField validationState={form.errors.password ? 'invalid' : 'valid'} type='password' value={form.values.password} onChange={utils.setFieldValue(form, 'password')} label='password' />
+            <TextField validationState={form.errors.password_confirm ? 'invalid' : 'valid'} type='password' value={form.values.password_confirm} onChange={utils.setFieldValue(form, 'password_confirm')} label='password confirm' />
+          </Form>
+        </Content>
+
+        {signupResult.error && (
+          <Footer>
+            <Content>{signupResult.error.graphQLErrors[0].message}</Content>
+          </Footer>
+        )}
+
+        <ButtonGroup>
+          <Button variant='secondary' onPress={close}>Cancel</Button>
+          <Button variant='cta' onPress={onClickSignUp} >Sign Up</Button>
+        </ButtonGroup>
+      </Dialog>
+    )
+  }
+
+  return (
+    <div>
+      <View paddingY='size-150'>
+        <Flex direction='row' justifyContent='center'>
+          <Flex direction='row' width='960px' justifyContent='space-between'>
+            <Flex justifyContent='center'>
+              <Heading alignSelf='center' level={3}>
+                Docmate
+              </Heading>
+              <small>Alpha</small>
+            </Flex>
+
+            <Flex justifyContent='center'>
+              {!userService.isLogin() && (
+                <Flex alignSelf='center' gap='size-100'>
+                  <DialogTrigger>
+                    <Button variant='cta'>Sign In / Sign Up</Button>
+
+                    {close => {
+                      if (isSignUpDialog) {
+                        return <SignUpDialog close={close} />
+                      } else {
+                        return <SignInDialog close={close} />
+                      }
+                    }}
+                  </DialogTrigger>
+
+                </Flex>
+              )}
+
+              {userService.isLogin() && (
+                <Flex alignSelf='center' gap='size-100'>
+                  <CreateDocTrigger teams={teams} />
+
+                  <Flex alignSelf='center'>
+                    <MenuTrigger>
+                      <ActionButton isQuiet UNSAFE_style={{ cursor: 'pointer' }}>
+                        <img width='28px' style={{ borderRadius: '50%' }} src={`https://www.gravatar.com/avatar/${userService.getUserInfo().avatar}`} />
+                      </ActionButton>
+                      <Menu onAction={key => {
+                        if (key === ' signout') {
+                          userService.signOut()
+                        }
+                      }}>
+                        <Item key='signout'>Sign Out</Item>
+                      </Menu>
+                    </MenuTrigger>
+                  </Flex>
+
+                </Flex>
+              )}
+            </Flex>
+
+          </Flex>
+
+        </Flex>
+
+        <View>
+          {userService.isLogin() && <DocsPannel teams={teams} />}
+        </View>
+      </View>
+    </div>
+  )
+}
+
+function DocsPannel({
+  teams
+}: {
+  teams: GetUserTeamsResult['user_team']
+}) {
+
+  const [selectedTeam, setSelectedTeam] = React.useState(null as null | string)
+  const [getTeamDocsResult, getTeamDocs] = useQuery<GetTeamDocsResult>({ query: GetTeamDocs, variables: { teamId: selectedTeam } })
+
+  React.useEffect(() => {
+    if (!selectedTeam && teams.length > 0) {
+      setSelectedTeam(teams[0].team.id)
+    }
+  }, [teams])
+
+  function onSelectTeam(teamId: string) {
+    setSelectedTeam(teamId)
+    getTeamDocs()
+  }
+
+  return (
+    <Flex justifyContent='center'>
+      <View width='960px' marginTop='size-500'>
+        <Flex>
+          <Picker selectedKey={selectedTeam} placeholder='Team' onSelectionChange={onSelectTeam}>
+            {teams.map(team => {
+              return (
+                <Item key={team.team.id}>{team.team.title}</Item>
+              )
+            })}
+          </Picker>
+        </Flex>
+
+        <Docs onClickDoc={
+          doc => {
+            history.push(`/admin/doc/${doc.id}`)
+          }
+        } docs={getTeamDocsResult.data?.doc || []} />
+      </View>
+    </Flex>
+  )
+}
+
+export default Layout

@@ -5,45 +5,7 @@ import {
   Grid, View, Flex, ListBox, Section, Item, Button, Text, Heading, Link, ActionButton
 } from '@adobe/react-spectrum'
 import SideNav, { SideNavItem, SideNavItemLink, SideNavHead } from '../../../components/SideNav'
-type GetDocByIdResult = {
-  doc_by_pk: {
-    id: string
-    title: string,
-    pages: {
-      id: string,
-      slug: string,
-      title
-    }[]
-  }
-}
-const GetDocBySlug = `
-query($docId: uuid!) {
-  doc_by_pk(id: $docId) {
-    id, title, pages(
-      where: {
-        deleted_at: { _is_null: true }
-      }
-    ) {
-      slug, title
-    }
-  }
-}
-`
-
-type CreatePageResult = {
-  insert_page_one: {
-    id: string,
-    slug: string,
-  }
-}
-const CreatePage = `
-mutation ($object: page_insert_input!) {
-  insert_page_one(object: $object) {
-    id, slug
-  }
-}
-`
-
+import { GetDocByIdResult, GetDocById, CreatePageResult, CreatePage } from '../../../gql'
 function DocAdmin({
   match,
   history,
@@ -52,7 +14,7 @@ function DocAdmin({
   const { docId } = match.params
 
   const [getDocReuslt, getDoc] = useQuery<GetDocByIdResult>({
-    query: GetDocBySlug, variables: {
+    query: GetDocById, variables: {
       docId,
     }
   })
@@ -111,7 +73,7 @@ function DocAdmin({
             </Flex>
             <Flex justifyContent='center' flex='1'>
               <Heading level={3} alignSelf='center'>
-                {doc.title}
+                {doc.team.title} / {doc.title}
               </Heading>
             </Flex>
 
