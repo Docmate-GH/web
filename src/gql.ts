@@ -146,3 +146,19 @@ mutation ($docId: uuid!, $input: doc_set_input!) {
   }
 }
 `
+
+export type CreateTeamParams = {
+  title: string
+}
+export type CreateTeamResult = {
+  createTeam: {
+    teamId: string
+  }
+}
+export const CreateTeam = `
+mutation ($title: String!) {
+  createTeam(input: {title: $title}) {
+    teamId
+  }
+}
+`

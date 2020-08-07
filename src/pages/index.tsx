@@ -1,15 +1,15 @@
 import * as React from 'react'
-import { Provider, useMutation, useQuery } from 'urql'
+import { Provider, useMutation, useQuery, OperationResult } from 'urql'
 import client from '../client'
 // @ts-expect-error
 import { history } from 'umi'
 import * as utils from '../utils'
 import { useFormik } from 'formik'
 import * as yup from 'yup'
-import { View, Flex, Button, Text, IllustratedMessage, Link, Heading, Content, DialogTrigger, Footer, ActionButton, Dialog, Divider, ButtonGroup, Form, TextField, RadioGroup, Radio, Header, MenuTrigger, Menu, Item, Picker } from '@adobe/react-spectrum'
+import { View, Flex, Button, Text, IllustratedMessage, Link, Heading, Content, DialogTrigger, Footer, ActionButton, Dialog, Divider, ButtonGroup, Form, TextField, RadioGroup, Radio, Header, MenuTrigger, Menu, Item, Picker, Section } from '@adobe/react-spectrum'
 import Table, { TableHead, TableBody, TableHeadCell, TableRow, TableCell } from '../components/Table'
 import { userService } from '../service'
-import { SignInResult, SignIn, SignUpResult, SignUp, GetUserTeams, GetUserTeamsResult, GetTeamDocsResult, GetTeamDocs, CreateDocResult, CreateDoc } from '../gql'
+import { SignInResult, SignIn, SignUpResult, SignUp, GetUserTeams, GetUserTeamsResult, GetTeamDocsResult, GetTeamDocs, CreateDocResult, CreateDoc, CreateTeam, CreateTeamParams, CreateTeamResult } from '../gql'
 import AppFooter from '../components/Footer'
 
 function CreateDocTrigger({
@@ -141,6 +141,51 @@ function Docs({
   )
 }
 
+function CreateTeamTrigger({
+  isOpen,
+  onClickCancel,
+  onCreateSuccess
+}: {
+  isOpen: boolean,
+  onClickCancel: () => void,
+  onCreateSuccess: (result: OperationResult<CreateTeamResult>) => void
+}) {
+
+  const [ createTeamResult, createTeam  ] = useMutation<CreateTeamResult, CreateTeamParams>(CreateTeam)
+
+  const form = useFormik({
+    initialValues: {
+      title: ''
+    },
+    async onSubmit(values) {
+      const result = await createTeam({
+        title: values.title
+      })
+      if (!result.error) {
+        onCreateSuccess(result)
+      }
+    }
+  })
+
+  return <DialogTrigger isOpen={isOpen}>
+    <div />
+    <Dialog size='S'>
+      <Heading>Create Team</Heading>
+      <Divider />
+      <Content>
+        <Form isQuiet>
+          <TextField onChange={utils.setFieldValue(form, 'title')} label='Title' />
+        </Form>
+      </Content>
+
+      <ButtonGroup>
+        <Button onPress={onClickCancel} variant='secondary'>Cancel</Button>
+        <Button onPress={form.submitForm} variant='cta'>Create</Button>
+      </ButtonGroup>
+    </Dialog>
+  </DialogTrigger>
+}
+
 function Layout({
   history
 }) {
@@ -148,6 +193,8 @@ function Layout({
   const [isSignUpDialog, setIsSignupDialog] = React.useState(true)
 
   const [getUserTeamsResult, getUserTeams] = useQuery<GetUserTeamsResult>({ query: GetUserTeams })
+
+  const [ createTeamDialogOpened, setCreateTeamDialogOpened ] = React.useState(false)
 
   const teams = getUserTeamsResult.data ? getUserTeamsResult.data.user_team : []
 
@@ -288,6 +335,14 @@ function Layout({
 
   return (
     <div>
+      <CreateTeamTrigger
+        onCreateSuccess={result => {
+          const team = result.data!.createTeam
+          setCreateTeamDialogOpened(false)
+        }}
+        isOpen={createTeamDialogOpened} 
+        onClickCancel={() => setCreateTeamDialogOpened(false)} 
+      />
       <View paddingY='size-150'>
         <Flex direction='row' justifyContent='center'>
           <Flex direction='row' width='960px' justifyContent='space-between'>
@@ -328,9 +383,18 @@ function Layout({
                       <Menu onAction={key => {
                         if (key === ' signout') {
                           userService.signOut()
+                        } else if (key === 'create_team') {
+                          setCreateTeamDialogOpened(true)
                         }
                       }}>
-                        <Item key='signout'>Sign Out</Item>
+                        <Section>
+                          <Item key='create_team'>
+                            Create Team
+                            </Item>
+                        </Section>
+                        <Section>
+                          <Item key='signout'>Sign Out</Item>
+                        </Section>
                       </Menu>
                     </MenuTrigger>
                   </Flex>
@@ -375,7 +439,7 @@ function DocsPannel({
 
   return (
     <Flex justifyContent='center'>
-      <View width='960px' marginTop='size-500'>
+      <View width='960px' marginY='size-500'>
         <Flex>
           <Picker selectedKey={selectedTeam} placeholder='Team' onSelectionChange={onSelectTeam}>
             {teams.map(team => {

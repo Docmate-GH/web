@@ -5,6 +5,7 @@ import { userService } from './service'
 
 export const client = createClient({
   url: 'http://localhost:8080/v1/graphql',
+  requestPolicy: 'cache-and-network',
   fetchOptions() {
 
     const headers = {}
