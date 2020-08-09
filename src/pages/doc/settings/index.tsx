@@ -54,7 +54,7 @@ function DocSettings({
       <Form isQuiet>
         <TextField value={form.values.title} onChange={setFieldValue(form, 'title')} label='Doc Title' />
 
-        <RadioGroup label='Template' orientation='horizontal' defaultValue='docute'>
+        <RadioGroup label='Template' orientation='horizontal' value='docute'>
           <Radio value='docute'>Docute</Radio>
           <Radio isDisabled value='docsify'>Docsify (comming soon...)</Radio>
         </RadioGroup>

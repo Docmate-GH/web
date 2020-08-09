@@ -2,6 +2,12 @@ import routes from './routes'
 
 export default {
   title: 'Docmate',
+
+  manifest: {},
+
+  hash: true,
+
+  publicPath: '/static/',
   
   proxy: {
     '/graphql': {

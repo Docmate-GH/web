@@ -73,7 +73,7 @@ function CreateDocTrigger({
                     </View>
                   </Flex>
 
-                  <RadioGroup label='Template' orientation='horizontal' defaultValue='docute'>
+                  <RadioGroup label='Template' orientation='horizontal' value='docute'>
                     <Radio value='docute'>Docute</Radio>
                     <Radio isDisabled value='docsify'>Docsify (comming soon...)</Radio>
                   </RadioGroup>
@@ -360,7 +360,9 @@ function Layout(props) {
 
               {userService.isLogin() && (
                 <Flex alignSelf='center' gap='size-100'>
-                  <CreateDocTrigger teams={teams} />
+                  <View alignSelf='center'>
+                    <CreateDocTrigger teams={teams} />
+                  </View>
 
                   <Flex alignSelf='center'>
                     <MenuTrigger>
