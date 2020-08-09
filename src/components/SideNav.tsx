@@ -1,7 +1,12 @@
+// https://opensource.adobe.com/spectrum-css/sidenav.html
+
 import * as React from 'react'
 import '@spectrum-css/sidenav'
+import * as classnames from 'classnames'
 
-export default function SideNav(props) {
+export default function SideNav(props: {
+  children: any,
+}) {
   return (
     <nav>
       <ul className='spectrum-SideNav'>
@@ -11,9 +16,13 @@ export default function SideNav(props) {
   )
 }
 
-export function SideNavItem(props) {
+
+export function SideNavItem(props: {
+  children: any,
+  selected?: boolean
+}) {
   return (
-    <li className='spectrum-SideNav-item'>
+    <li className={classnames('spectrum-SideNav-item', { 'is-selected': props.selected === true })} >
       {props.children}
     </li>
   )

@@ -15,7 +15,7 @@ import AppFooter from '../components/Footer'
 function CreateDocTrigger({
   teams
 }: {
-  teams: GetUserTeamsResult['user_team']
+  teams: GetUserTeamsResult['users'][0]['user_teams']
 }) {
   const [createDocResult, createDoc] = useMutation<CreateDocResult>(CreateDoc)
 
@@ -102,42 +102,35 @@ function Docs({
 }) {
 
   return (
-    <div>
-      <Flex justifyContent='center'>
-        <View width='960px' paddingY='size-100'>
-          <Table>
-            <TableHead>
-              <TableHeadCell>
-                <Text>Doc</Text>
-              </TableHeadCell>
+    <Table>
+      <TableHead>
+        <TableHeadCell>
+          <Text>Doc</Text>
+        </TableHeadCell>
 
-              <TableHeadCell>
-                <Text>Created Date</Text>
-              </TableHeadCell>
+        <TableHeadCell>
+          <Text>Created Date</Text>
+        </TableHeadCell>
 
-            </TableHead>
+      </TableHead>
 
-            <TableBody>
-              {docs.map(doc => {
+      <TableBody>
+        {docs.map(doc => {
 
-                function goDocAdmin() {
-                  history.push(`/`)
-                }
+          function goDocAdmin() {
+            history.push(`/`)
+          }
 
-                return (
-                  <TableRow key={doc.id} onClick={onClickDoc ? _ => onClickDoc(doc) : utils.noop}>
-                    <TableCell>{doc.title}</TableCell>
-                    <TableCell>{(new Date(doc.created_at).toLocaleString())}</TableCell>
-                  </TableRow>
-                )
-              })}
-            </TableBody>
+          return (
+            <TableRow key={doc.id} onClick={onClickDoc ? _ => onClickDoc(doc) : utils.noop}>
+              <TableCell>{doc.title}</TableCell>
+              <TableCell>{(new Date(doc.created_at).toLocaleString())}</TableCell>
+            </TableRow>
+          )
+        })}
+      </TableBody>
 
-          </Table>
-        </View>
-      </Flex>
-
-    </div>
+    </Table>
   )
 }
 
@@ -151,7 +144,7 @@ function CreateTeamTrigger({
   onCreateSuccess: (result: OperationResult<CreateTeamResult>) => void
 }) {
 
-  const [ createTeamResult, createTeam  ] = useMutation<CreateTeamResult, CreateTeamParams>(CreateTeam)
+  const [createTeamResult, createTeam] = useMutation<CreateTeamResult, CreateTeamParams>(CreateTeam)
 
   const form = useFormik({
     initialValues: {
@@ -186,21 +179,15 @@ function CreateTeamTrigger({
   </DialogTrigger>
 }
 
-function Layout({
-  history
-}) {
+function Layout(props) {
 
   const [isSignUpDialog, setIsSignupDialog] = React.useState(true)
 
   const [getUserTeamsResult, getUserTeams] = useQuery<GetUserTeamsResult>({ query: GetUserTeams })
 
-  const [ createTeamDialogOpened, setCreateTeamDialogOpened ] = React.useState(false)
+  const [createTeamDialogOpened, setCreateTeamDialogOpened] = React.useState(false)
 
-  const teams = getUserTeamsResult.data ? getUserTeamsResult.data.user_team : []
-
-  React.useEffect(() => {
-    getUserTeams()
-  }, [])
+  const teams = getUserTeamsResult.data ? getUserTeamsResult.data.users[0].user_teams : []
 
   function SignInDialog({ close }) {
 
@@ -339,9 +326,13 @@ function Layout({
         onCreateSuccess={result => {
           const team = result.data!.createTeam
           setCreateTeamDialogOpened(false)
+          setTimeout(() => {
+            history.push(`/team/${team.teamId}`)
+
+          }, 0)
         }}
-        isOpen={createTeamDialogOpened} 
-        onClickCancel={() => setCreateTeamDialogOpened(false)} 
+        isOpen={createTeamDialogOpened}
+        onClickCancel={() => setCreateTeamDialogOpened(false)}
       />
       <View paddingY='size-150'>
         <Flex direction='row' justifyContent='center'>
@@ -408,7 +399,7 @@ function Layout({
         </Flex>
 
         <View>
-          {userService.isLogin() && <DocsPannel teams={teams} />}
+          {userService.isLogin() && <DocsPannel {...props} teams={teams} />}
         </View>
       </View>
 
@@ -418,43 +409,33 @@ function Layout({
 }
 
 function DocsPannel({
-  teams
+  teams,
+  children,
+  history,
+  ...props
 }: {
-  teams: GetUserTeamsResult['user_team']
+  teams: GetUserTeamsResult['users'][0]['user_teams'],
+  children: any,
+  history: any,
+  match: {
+    params: {
+      teamId?: string
+    }
+  }
 }) {
-
-  const [selectedTeam, setSelectedTeam] = React.useState(null as null | string)
+  const [selectedTeam, setSelectedTeam] = React.useState(props.match.params.teamId as null | string)
   const [getTeamDocsResult, getTeamDocs] = useQuery<GetTeamDocsResult>({ query: GetTeamDocs, variables: { teamId: selectedTeam } })
 
   React.useEffect(() => {
     if (!selectedTeam && teams.length > 0) {
-      setSelectedTeam(teams[0].team.id)
+      setSelectedTeam(teams[0]?.team.id)
     }
   }, [teams])
-
-  function onSelectTeam(teamId: string) {
-    setSelectedTeam(teamId)
-    getTeamDocs()
-  }
 
   return (
     <Flex justifyContent='center'>
       <View width='960px' marginY='size-500'>
-        <Flex>
-          <Picker selectedKey={selectedTeam} placeholder='Team' onSelectionChange={onSelectTeam}>
-            {teams.map(team => {
-              return (
-                <Item key={team.team.id}>{team.team.title}</Item>
-              )
-            })}
-          </Picker>
-        </Flex>
-
-        <Docs onClickDoc={
-          doc => {
-            history.push(`/admin/doc/${doc.id}`)
-          }
-        } docs={getTeamDocsResult.data?.doc || []} />
+        {children}
       </View>
     </Flex>
   )

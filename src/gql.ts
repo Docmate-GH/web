@@ -29,22 +29,33 @@ mutation($email: String!, $password: String!) {
 `
 
 export type GetUserTeamsResult = {
-  user_team: {
-    team: {
-      id: string, title: string
-    }
-  }[]
+  users: {
+    id: string,
+    user_teams: {
+      team: {
+        id: string,
+        title: string,
+        master: string,
+        is_personal: boolean
+      }
+    }[]
+  }[],
 }
 export const GetUserTeams = `
 query {
-  user_team {
-    team {
-      id, title
+  users {
+    id, user_teams {
+      team {
+      id, title, master, is_personal
+      }
     }
   }
 }
 `
 
+export type GetTeamDocsParams = {
+  teamId: string
+}
 export type GetTeamDocsResult = {
   doc: {
     id: string,
@@ -159,6 +170,71 @@ export const CreateTeam = `
 mutation ($title: String!) {
   createTeam(input: {title: $title}) {
     teamId
+  }
+}
+`
+
+
+export type GetTeamFullInfoParams = {
+  teamId: string
+}
+export type GetTeamFullInfoResult = {
+  teams_by_pk: {
+    invite_id: string,
+    team_users: {
+      user: {
+        id: string,
+        email: string,
+        username: string
+      }
+    }[]
+  }
+}
+export const GetTeamFullInfo = `
+query($teamId:uuid!) {
+  teams_by_pk(id:$teamId) {
+    invite_id,
+    team_users {
+      user {
+        id, email, username
+      }
+    }
+  }
+}
+`
+
+export type JoinTeamResult = {
+  joinTeam: {
+    teamId: string
+  }
+}
+export type JoinTeamParasm = {
+  inviteId: string
+}
+export const JoinTeam = `
+mutation($inviteId: uuid!) {
+  joinTeam(inviteId: $inviteId) {
+    teamId
+  }
+}
+`
+
+export type RemoveMemberReuslt = {
+  delete_user_team: {
+    affected_rows: number
+  }
+}
+export type RemoveMemberParams = {
+  teamId: string,
+  userId: string
+}
+export const RemoveMember = `
+mutation($teamId: uuid!, $userId: uuid!) {
+  delete_user_team(where:{
+    team_id: { _eq: $teamId },
+    user_id: { _eq: $userId }
+  }) {
+    affected_rows
   }
 }
 `

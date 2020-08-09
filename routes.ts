@@ -6,7 +6,38 @@ function wrapProvider(item) {
 }
 
 export default [
-  { exact: true, path: '/', component: 'index' },
+  {
+    path: '/app', component: 'index', routes: [
+      {
+        path: '/app',
+        exact: true,
+        component: 'team/index',
+        routes: [
+          {
+            path: '/app',
+            exact: true,
+            component: 'team/docs'
+          }
+        ]
+      },
+      {
+        path: '/app/team/:teamId',
+        component: 'team/index',
+        routes: [
+          {
+            exact: true,
+            path: '/app/team/:teamId',
+            component: 'team/docs'
+          },
+          {
+            exact: true,
+            path: '/app/team/:teamId/settings',
+            component: 'team/settings'
+          }
+        ]
+      }
+    ]
+  },
   {
     path: '/admin',
     routes: [
@@ -25,5 +56,8 @@ export default [
         ]
       }
     ].map(wrapProvider)
+  },{
+    path: '/join/:inviteId',
+    component: 'join/index'
   }
 ].map(wrapProvider)

@@ -16,6 +16,7 @@
     "classnames": "^2.2.6",
     "formik": "^2.1.5",
     "graphql": "^15.3.0",
+    "js-md5": "^0.7.3",
     "nanoid": "^3.1.12",
     "normalize.css": "^8.0.1",
     "urql": "^1.10.0",
