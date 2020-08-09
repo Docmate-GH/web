@@ -1,12 +1,14 @@
 import * as React from 'react'
-import { Flex, Picker, Item, View, Text } from '@adobe/react-spectrum'
+import { Flex, Picker, Item, View, Text, ProgressCircle } from '@adobe/react-spectrum'
 import { userService } from '../../service'
 import { useQuery } from 'urql'
 import { GetUserTeams, GetUserTeamsResult, GetTeamDocs, GetTeamDocsResult, GetTeamDocsParams } from '../../gql'
 import SideNav, { SideNavHead, SideNavItem, SideNavItemLink } from '../../components/SideNav'
+import Loading from '../../components/Loading'
 
 export type TeamChildrenProps = {
-  currentTeam: GetUserTeamsResult['users'][0]['user_teams'][0]
+  currentTeam: GetUserTeamsResult['users'][0]['user_teams'][0],
+  history: any
 }
 
 export default (props: {
@@ -31,9 +33,7 @@ export default (props: {
   }, [])
 
   if (getUserTeamsResult.fetching) {
-    return (
-      <div>Fetching...</div>
-    )
+    return <Loading />
   }
 
   if (getUserTeamsResult.data) {
@@ -78,7 +78,7 @@ export default (props: {
 
     return (
       <Flex direction='column'>
-        <View marginY='size-200'>
+        <View marginY='size'>
           <Picker selectedKey={selectedTeamId} placeholder='Team' onSelectionChange={onSelectTeam}>
             {teams.map(team => {
               const isOwner = team.team.master === userService.getUserInfo().id
@@ -113,7 +113,8 @@ export default (props: {
             )}
             <View flex='1'>
               {React.cloneElement(props.children, {
-                currentTeam
+                currentTeam,
+                history: props.history
               })}
             </View>
           </Flex>

@@ -39,19 +39,19 @@ export default [
     ]
   },
   {
-    path: '/admin',
+    path: '/doc',
     routes: [
       {
-        path: '/admin/doc/:docId',
-        component: 'admin/doc/index',
+        path: '/doc/:docId',
+        component: 'doc/index',
         routes: [
           {
-            path: '/admin/doc/:docId',
-            component: 'admin/doc/settings'
+            path: '/doc/:docId',
+            component: 'doc/settings'
           },
           {
-            path: '/admin/doc/:docId/page/:pageSlug',
-            component: 'admin/doc/page'
+            path: '/doc/:docId/page/:pageSlug',
+            component: 'doc/page'
           }
         ]
       }

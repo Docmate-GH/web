@@ -102,7 +102,7 @@ export default ({
       pageId: page.id
     })
     console.log(res)
-    history.push(`/admin/doc/${docId}`)
+    history.push(`/doc/${docId}`)
   }
 
   const page = getPageResult.data.page[0]!
@@ -159,7 +159,7 @@ export default ({
       </View>
 
 
-      <View padding='size-200' backgroundColor='static-white'>
+      <View padding='size-200' backgroundColor='static-white' minHeight='600px'>
         <Editor id={page.id} onChange={content => mainForm.setFieldValue('content', content)} value={page.content} />
       </View>
     </View>

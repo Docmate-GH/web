@@ -4,9 +4,11 @@ import { nanoid } from 'nanoid'
 import {
   Grid, View, Flex, ListBox, Section, Item, Button, Text, Heading, Link, ActionButton
 } from '@adobe/react-spectrum'
-import SideNav, { SideNavItem, SideNavItemLink, SideNavHead } from '../../../components/SideNav'
-import { GetDocByIdResult, GetDocById, CreatePageResult, CreatePage } from '../../../gql'
-import Footer from '../../../components/Footer'
+import SideNav, { SideNavItem, SideNavItemLink, SideNavHead } from '../../components/SideNav'
+import { GetDocByIdResult, GetDocById, CreatePageResult, CreatePage } from '../../gql'
+import Footer from '../../components/Footer'
+import Loading from '../../components/Loading'
+
 
 function DocAdmin({
   match,
@@ -28,7 +30,7 @@ function DocAdmin({
   }, [])
 
   if (getDocReuslt.fetching) {
-    return <div>Fetching...</div>
+    return <Loading />
   }
 
   if (getDocReuslt.error) {
@@ -47,7 +49,7 @@ function DocAdmin({
       }
     })
     if (res.data) {
-      history.push(`/admin/doc/${docId}/page/${res.data.insert_page_one.slug}`)
+      history.push(`/doc/${docId}/page/${res.data.insert_page_one.slug}`)
     }
   }
 
@@ -56,7 +58,7 @@ function DocAdmin({
   }
 
   function goSettings() {
-    history.push(`/admin/doc/${docId}`)
+    history.push(`/doc/${docId}`)
   }
 
   return (
@@ -68,7 +70,7 @@ function DocAdmin({
               <Flex flex='1'>
                 <View alignSelf='center' paddingStart='size-200'>
                   <Heading level={3} UNSAFE_style={{ cursor: 'pointer' }}>
-                    <div onClick={_ => history.push('/')}>
+                    <div onClick={_ => history.push('/app')}>
                       Docmate
                   </div>
                   </Heading>
@@ -90,7 +92,7 @@ function DocAdmin({
         <Flex justifyContent='center'>
           <Flex width='960px'>
             <View>
-              <View UNSAFE_className='rounded' backgroundColor='static-white' width='size-3000' marginY='size-200' paddingX='size-200' paddingY='size-200' UNSAFE_style={{ boxSizing: 'border-box' }}>
+              <View UNSAFE_className='rounded' backgroundColor='static-white' width='size-3000' marginY='size-200' paddingX='size-200' paddingTop='size-100' paddingBottom='size-200' UNSAFE_style={{ boxSizing: 'border-box' }}>
                 <SideNav>
                   <SideNavItem>
                     <SideNavHead>
@@ -108,7 +110,7 @@ function DocAdmin({
                     {doc.pages.map(page => {
                       return (
                         <SideNavItem key={page.id}>
-                          <SideNavItemLink onClick={_ => history.push(`/admin/doc/${doc.id}/page/${page.slug}`)}>{page.title}</SideNavItemLink>
+                          <SideNavItemLink onClick={_ => history.push(`/doc/${doc.id}/page/${page.slug}`)}>{page.title}</SideNavItemLink>
                         </SideNavItem>
                       )
                     })}

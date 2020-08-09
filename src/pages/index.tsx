@@ -31,7 +31,7 @@ function CreateDocTrigger({
       })
 
       if (result.data?.insert_doc_one.id) {
-        history.push(`/admin/doc/${result.data.insert_doc_one.id}`)
+        history.push(`/doc/${result.data.insert_doc_one.id}`)
       } else {
         // TODO: create page error
       }
@@ -116,10 +116,6 @@ function Docs({
 
       <TableBody>
         {docs.map(doc => {
-
-          function goDocAdmin() {
-            history.push(`/`)
-          }
 
           return (
             <TableRow key={doc.id} onClick={onClickDoc ? _ => onClickDoc(doc) : utils.noop}>
@@ -372,7 +368,7 @@ function Layout(props) {
                         <img width='28px' style={{ borderRadius: '50%' }} src={`https://www.gravatar.com/avatar/${userService.getUserInfo().avatar}`} />
                       </ActionButton>
                       <Menu onAction={key => {
-                        if (key === ' signout') {
+                        if (key === 'signout') {
                           userService.signOut()
                         } else if (key === 'create_team') {
                           setCreateTeamDialogOpened(true)
@@ -434,7 +430,7 @@ function DocsPannel({
 
   return (
     <Flex justifyContent='center'>
-      <View width='960px' marginY='size-500'>
+      <View width='960px' marginY='size-500' minHeight='600px'>
         {children}
       </View>
     </Flex>

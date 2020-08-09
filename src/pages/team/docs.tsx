@@ -27,7 +27,9 @@ export default (props: TeamChildrenProps) => {
       <TableBody>
         {docs.map(doc => {
           return (
-            <TableRow key={doc.id} >
+            <TableRow onClick={_ => {
+              props.history.push(`/doc/${doc.id}`)
+            }} key={doc.id} >
               <TableCell>{doc.title}</TableCell>
               <TableCell>{(new Date(doc.created_at).toLocaleString())}</TableCell>
             </TableRow>

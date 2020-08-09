@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { View, Flex, Form, TextField, RadioGroup, Radio, Button, Picker, Item, ProgressCircle } from '@adobe/react-spectrum'
 import { useQuery, useMutation } from 'urql'
-import { GetDocByIdResult, UpdateDoc, UpdateDocResult, UpdateDocParams } from '../../../../gql'
+import { GetDocByIdResult, UpdateDoc, UpdateDocResult, UpdateDocParams } from '../../../gql'
 import { useFormik } from 'formik'
-import { setFieldValue, alert } from '../../../../utils'
+import { setFieldValue, alert } from '../../../utils'
 
 function Container(props) {
   return (
