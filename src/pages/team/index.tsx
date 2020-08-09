@@ -77,7 +77,7 @@ export default (props: {
     })();
 
     return (
-      <Flex direction='column'>
+      <Flex direction='column' gap='size-200'>
         <View marginY='size'>
           <Picker selectedKey={selectedTeamId} placeholder='Team' onSelectionChange={onSelectTeam}>
             {teams.map(team => {
