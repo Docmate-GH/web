@@ -2,7 +2,7 @@
   "name": "docpera",
   "scripts": {
     "dev": "umi dev",
-    "build": "umi build"
+    "build": "NODE_ENV=production umi build"
   },
   "devDependencies": {
     "umi": "^3.2.14"

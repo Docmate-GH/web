@@ -3,6 +3,10 @@ import routes from './routes'
 export default {
   title: 'Docmate',
 
+  define: {
+    GRAPHQL_URL: process.env.NODE_ENV === 'production' ? 'http://docmate.io:8080/v1/graphql' : 'http://localhost:8080/v1/graphql'
+  },
+
   manifest: {},
 
   hash: true,

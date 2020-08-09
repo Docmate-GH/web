@@ -1,3 +1,4 @@
+
 declare class Doc {
   id: string
   slug: string

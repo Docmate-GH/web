@@ -2,9 +2,10 @@ import { createClient, Provider } from 'urql'
 import * as React from 'react'
 import { userService } from './service'
 
+declare const GRAPHQL_URL: string
 
 export const client = createClient({
-  url: 'http://localhost:8080/v1/graphql',
+  url: GRAPHQL_URL,
   requestPolicy: 'cache-and-network',
   fetchOptions() {
 
