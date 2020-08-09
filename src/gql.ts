@@ -238,3 +238,19 @@ mutation($teamId: uuid!, $userId: uuid!) {
   }
 }
 `
+
+export type RevokeInviteIdParams = {
+  teamId: string
+}
+export type RevokeInviteIdResult = {
+  revokeInviteId: {
+    code: string
+  }
+}
+export const RevokeInviteId = `
+mutation($teamId: uuid!) {
+  revokeInviteId(teamId: $teamId) {
+    code
+  }
+}
+`

@@ -4,7 +4,7 @@ import { TeamChildrenProps } from '.'
 import { useFormik } from 'formik'
 import { setFieldValue, alert } from '../../utils'
 import { useQuery } from 'urql'
-import { GetTeamFullInfo, GetTeamFullInfoResult, GetTeamFullInfoParams, RemoveMember, RemoveMemberReuslt, RemoveMemberParams } from '../../gql'
+import { GetTeamFullInfo, GetTeamFullInfoResult, GetTeamFullInfoParams, RemoveMember, RemoveMemberReuslt, RemoveMemberParams, RevokeInviteId, RevokeInviteIdResult, RevokeInviteIdParams } from '../../gql'
 import * as md5 from 'js-md5'
 import { client } from '../../client'
 
@@ -22,6 +22,16 @@ export default (props: TeamChildrenProps) => {
   })
 
   const teamInfo = getTeamFullInfoResult.data
+
+  async function onClickRevokeInviteId() {
+    const updateResult = await client.mutation<RevokeInviteIdResult, RevokeInviteIdParams>(RevokeInviteId, { teamId: props.currentTeam.team.id }).toPromise()
+    if (!updateResult.error) {
+      alert('Revoke success', { type: 'success' })
+      location.reload()
+    } else {
+      // TODO:
+    }
+  }
 
   return (
     <View>
@@ -43,7 +53,7 @@ export default (props: TeamChildrenProps) => {
             <Form isQuiet>
               <Flex gap='size-200'>
                 <TextField flex='9' isDisabled label='Invite link' value={`https://docmate.io/join/${teamInfo.teams_by_pk.invite_id}`} />
-                <Button marginTop='size-300' alignSelf='center' flex='1' variant='cta'>Revoke</Button>
+                <Button marginTop='size-300' alignSelf='center' flex='1' variant='cta' onPress={onClickRevokeInviteId}>Revoke</Button>
               </Flex>
             </Form>
             <View marginTop='size-400' UNSAFE_className='rounded'>
