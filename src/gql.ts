@@ -254,3 +254,24 @@ mutation($teamId: uuid!) {
   }
 }
 `
+
+export type UpdateTeamInfoParams = {
+  teamId: string,
+  input: {
+    title: string
+  }
+}
+export type UpdateTeamInfoResult = {
+  update_teams_by_pk: {
+    id: string
+  }
+}
+export const UpdateTeamInfo = `
+mutation($teamId: uuid!, $input: teams_set_input) {
+  update_teams_by_pk(_set: $input, pk_columns: {
+    id: $teamId
+  }) {
+    id
+  }
+}
+`

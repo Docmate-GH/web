@@ -3,21 +3,33 @@ import { View, Heading, Text, Form, TextField, Button, Flex, Image, Divider } fr
 import { TeamChildrenProps } from '.'
 import { useFormik } from 'formik'
 import { setFieldValue, alert } from '../../utils'
-import { useQuery } from 'urql'
-import { GetTeamFullInfo, GetTeamFullInfoResult, GetTeamFullInfoParams, RemoveMember, RemoveMemberReuslt, RemoveMemberParams, RevokeInviteId, RevokeInviteIdResult, RevokeInviteIdParams } from '../../gql'
+import { useQuery, useMutation } from 'urql'
+import { GetTeamFullInfo, GetTeamFullInfoResult, GetTeamFullInfoParams, RemoveMember, RemoveMemberReuslt, RemoveMemberParams, RevokeInviteId, RevokeInviteIdResult, RevokeInviteIdParams, UpdateTeamInfoResult, UpdateTeamInfoParams, UpdateTeamInfo } from '../../gql'
 import * as md5 from 'js-md5'
 import { client } from '../../client'
 
 export default (props: TeamChildrenProps) => {
 
   const [getTeamFullInfoResult] = useQuery<GetTeamFullInfoResult, GetTeamFullInfoParams>({ query: GetTeamFullInfo, variables: { teamId: props.currentTeam.team.id } })
+  const [ updateTeamInfoResult, updateTeamInfo ] = useMutation<UpdateTeamInfoResult, UpdateTeamInfoParams>(UpdateTeamInfo)
 
   const form = useFormik({
     initialValues: {
       teamName: props.currentTeam.team.title
     },
-    onSubmit(values) {
+    async onSubmit(values) {
+      const res = await updateTeamInfo({
+        teamId: props.currentTeam.team.id,
+        input: {
+          title: values.teamName
+        }
+      })
 
+      if (!res.error) {
+        alert('Saved!', { type: 'success' })
+      } else {
+        // TODO:
+      }
     }
   })
 
@@ -40,7 +52,7 @@ export default (props: TeamChildrenProps) => {
         <View>
           <Form isQuiet>
             <TextField marginBottom='size-200' value={form.values.teamName} onChange={setFieldValue(form, 'teamName')} label='Team Name' />
-            <Button variant='cta' width='size-200' >Save</Button>
+            <Button variant='cta' width='size-200' onPress={form.submitForm} >Save</Button>
           </Form>
           {/* <Heading level={1}>Settings</Heading> */}
         </View>
