@@ -5,7 +5,7 @@ export default {
   title: 'Docmate',
 
   define: {
-    HOST: isProd ? 'https://docmate.io' : 'http://localhost:8000',
+    HOST: isProd ? 'https://docmate.io' : 'http://localhost:3000',
     GRAPHQL_URL: isProd ? '/gql' : 'http://localhost:8080/v1/graphql'
   },
 

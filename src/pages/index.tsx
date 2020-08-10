@@ -179,142 +179,11 @@ function Layout(props) {
 
   const [isSignUpDialog, setIsSignupDialog] = React.useState(true)
 
-  const [getUserTeamsResult, getUserTeams] = useQuery<GetUserTeamsResult>({ query: GetUserTeams })
+  const [getUserTeamsResult, getUserTeams] = useQuery<GetUserTeamsResult>({ query: GetUserTeams, pause: !userService.isLogin() })
 
   const [createTeamDialogOpened, setCreateTeamDialogOpened] = React.useState(false)
 
   const teams = getUserTeamsResult.data ? getUserTeamsResult.data.users[0].user_teams : []
-
-  function SignInDialog({ close }) {
-
-    const [signInResult, signIn] = useMutation<SignInResult>(SignIn)
-
-    const form = useFormik({
-      initialValues: {
-        email: '',
-        password: ''
-      },
-      async onSubmit(values) {
-        const result = await signIn({
-          email: values.email,
-          password: values.password
-        })
-        if (!result.error) {
-          const signInData = result.data!.signIn
-          userService.saveToken(signInData.token)
-          userService.saveUserInfo({
-            email: signInData.email,
-            id: signInData.id,
-            avatar: signInData.avatar,
-            username: signInData.username
-          })
-          location.reload()
-        }
-      }
-    })
-
-    function onClickSignIn() {
-      form.submitForm()
-    }
-
-    return (
-      <Dialog>
-        <Heading>
-          Sign In
-      </Heading>
-
-        <Header>
-          <Link onPress={_ => setIsSignupDialog(true)}>
-            <a >Don't have account</a>
-          </Link>
-        </Header>
-
-        <Divider />
-
-        <Content>
-          <Form isQuiet>
-            <TextField value={form.values.email} onChange={utils.setFieldValue(form, 'email')} label='email' placeholder='john@example.com' />
-            <TextField type='password' value={form.values.password} onChange={utils.setFieldValue(form, 'password')} label='password' />
-          </Form>
-        </Content>
-
-        <ButtonGroup>
-          <Button variant='secondary' onPress={close}>Cancel</Button>
-          <Button variant='cta' onPress={onClickSignIn}>Sign In</Button>
-        </ButtonGroup>
-      </Dialog>
-    )
-  }
-
-  function SignUpDialog({ close }) {
-
-    const [signupResult, signUp] = useMutation<SignUpResult>(SignUp)
-
-    const form = useFormik({
-      initialValues: {
-        password: '',
-        password_confirm: '',
-        email: ''
-      },
-      validationSchema() {
-        return yup.object().shape({
-          password: yup.string().required(),
-          password_confirm: yup.string().required(),
-          email: yup.string().required()
-        })
-      },
-      async onSubmit(values) {
-        const result = await signUp({
-          email: values.email,
-          password: values.password.toString(),
-          password_confirm: values.password_confirm.toString()
-        })
-
-        if (!result.error) {
-          close()
-        }
-      }
-    })
-
-    async function onClickSignUp() {
-      await form.submitForm()
-    }
-
-    return (
-      <Dialog>
-        <Heading>
-          Sign Up
-      </Heading>
-
-        <Header>
-          <Link onPress={_ => setIsSignupDialog(false)}>
-            <a>Already have account</a>
-          </Link>
-        </Header>
-
-        <Divider />
-
-        <Content>
-          <Form isQuiet>
-            <TextField validationState={form.errors.email ? 'invalid' : 'valid'} value={form.values.email} onChange={utils.setFieldValue(form, 'email')} label='email' placeholder='john@example.com' />
-            <TextField validationState={form.errors.password ? 'invalid' : 'valid'} type='password' value={form.values.password} onChange={utils.setFieldValue(form, 'password')} label='password' />
-            <TextField validationState={form.errors.password_confirm ? 'invalid' : 'valid'} type='password' value={form.values.password_confirm} onChange={utils.setFieldValue(form, 'password_confirm')} label='password confirm' />
-          </Form>
-        </Content>
-
-        {signupResult.error && (
-          <Footer>
-            <Content>{signupResult.error.graphQLErrors[0].message}</Content>
-          </Footer>
-        )}
-
-        <ButtonGroup>
-          <Button variant='secondary' onPress={close}>Cancel</Button>
-          <Button variant='cta' onPress={onClickSignUp} >Sign Up</Button>
-        </ButtonGroup>
-      </Dialog>
-    )
-  }
 
   return (
     <div>
@@ -323,7 +192,7 @@ function Layout(props) {
           const team = result.data!.createTeam
           setCreateTeamDialogOpened(false)
           setTimeout(() => {
-            history.push(`/team/${team.teamId}`)
+            history.push(`/app/team/${team.teamId}`)
 
           }, 0)
         }}
@@ -335,29 +204,12 @@ function Layout(props) {
           <Flex direction='row' width='960px' justifyContent='space-between'>
             <Flex justifyContent='center'>
               <Heading alignSelf='center' level={3}>
-                Docmate
+                <a style={{ cursor: 'pointer' }} onClick={_ => history.push('/app')}>Docmate</a>
               </Heading>
               <small>Alpha</small>
             </Flex>
 
             <Flex justifyContent='center'>
-              {!userService.isLogin() && (
-                <Flex alignSelf='center' gap='size-100'>
-                  <DialogTrigger>
-                    <Button variant='cta'>Sign In / Sign Up</Button>
-
-                    {close => {
-                      if (isSignUpDialog) {
-                        return <SignUpDialog close={close} />
-                      } else {
-                        return <SignInDialog close={close} />
-                      }
-                    }}
-                  </DialogTrigger>
-
-                </Flex>
-              )}
-
               {userService.isLogin() && (
                 <Flex alignSelf='center' gap='size-100'>
                   <View alignSelf='center'>
@@ -397,7 +249,7 @@ function Layout(props) {
         </Flex>
 
         <View>
-          {userService.isLogin() && <DocsPannel {...props} teams={teams} />}
+          {userService.isLogin() ? <DocsPannel {...props} teams={teams} /> : <Sign />}
         </View>
       </View>
 
@@ -436,6 +288,139 @@ function DocsPannel({
         {children}
       </View>
     </Flex>
+  )
+}
+
+
+enum SignView {
+  SignUp,
+  SignIn
+}
+function Sign() {
+
+  const [view, setView] = React.useState(SignView.SignIn)
+
+  return (
+    <View marginY='size-500'>
+      <Flex justifyContent='center'>
+        <View width='320px' backgroundColor='static-white' padding='size-500' UNSAFE_style={{ boxSizing: 'border-box' }} UNSAFE_className='rounded'>
+          {view === SignView.SignUp ? <SignUpForm setView={setView} /> : <SignInForm />}
+
+          <Flex justifyContent='center'>
+            <View marginTop='size-200'>
+              {view === SignView.SignUp ? <Link onPress={_ => setView(SignView.SignIn)}>Already have account</Link> : <Link onPress={_ => setView(SignView.SignUp)}>Create account</Link>}
+            </View>
+          </Flex>
+        </View>
+      </Flex>
+    </View>
+  )
+}
+
+function SignUpForm(props: {
+  setView: any
+}) {
+  const [signupResult, signUp] = useMutation<SignUpResult>(SignUp)
+  const [errorMessage, setErrorMessage] = React.useState(null as null | string)
+
+
+  const form = useFormik({
+    initialValues: {
+      password: '',
+      password_confirm: '',
+      email: ''
+    },
+    validationSchema() {
+      return yup.object().shape({
+        password: yup.string().required(),
+        password_confirm: yup.string().required(),
+        email: yup.string().required()
+      })
+    },
+    async onSubmit(values) {
+      const result = await signUp({
+        email: values.email,
+        password: values.password.toString(),
+        password_confirm: values.password_confirm.toString()
+      })
+
+      if (!result.error) {
+        utils.alert('Account created! Please sign in now', { type: 'success' })
+        props.setView(SignView.SignIn)
+      } else {
+        setErrorMessage(result.error.graphQLErrors[0].message)
+      }
+    }
+  })
+
+  async function onClickSignUp() {
+    await form.submitForm()
+  }
+
+  return (
+    <>
+      <Heading marginTop='0' level={1}>Welcome to Docmate</Heading>
+      <Heading marginTop='0' level={4}>Create a free account</Heading>
+
+      <Form isQuiet isRequired>
+        <Text UNSAFE_style={{ color: 'red' }}>{errorMessage}</Text>
+
+        <TextField validationState={form.errors.email ? 'invalid' : 'valid'} value={form.values.email} onChange={utils.setFieldValue(form, 'email')} label='email' placeholder='john@example.com' />
+        <TextField validationState={form.errors.password ? 'invalid' : 'valid'} type='password' value={form.values.password} onChange={utils.setFieldValue(form, 'password')} label='password' />
+        <TextField validationState={form.errors.password_confirm ? 'invalid' : 'valid'} type='password' value={form.values.password_confirm} onChange={utils.setFieldValue(form, 'password_confirm')} label='password confirm' />
+
+        <Button isDisabled={signupResult.fetching} onPress={onClickSignUp} marginTop='size-500' variant='cta'> Create Account</Button>
+      </Form>
+    </>
+  )
+}
+
+function SignInForm() {
+  const [signInResult, signIn] = useMutation<SignInResult>(SignIn)
+
+  const [errorMessage, setErrorMessage] = React.useState(null as null | string)
+
+  const form = useFormik({
+    initialValues: {
+      email: '',
+      password: ''
+    },
+    async onSubmit(values) {
+      const result = await signIn({
+        email: values.email,
+        password: values.password
+      })
+      if (!result.error) {
+        const signInData = result.data!.signIn
+        userService.saveToken(signInData.token)
+        userService.saveUserInfo({
+          email: signInData.email,
+          id: signInData.id,
+          avatar: signInData.avatar,
+          username: signInData.username
+        })
+        location.reload()
+      } else {
+        setErrorMessage(result.error!.graphQLErrors[0].message)
+      }
+    }
+  })
+
+  function onClickSignIn() {
+    form.submitForm()
+  }
+
+  return (
+    <>
+      <Heading marginTop='size-0' level={1}>Welcome to Docmate</Heading>
+      <Form isQuiet>
+        <Text UNSAFE_style={{ color: 'red' }}>{errorMessage}</Text>
+        <TextField value={form.values.email} onChange={utils.setFieldValue(form, 'email')} label='email' placeholder='john@example.com' />
+        <TextField type='password' value={form.values.password} onChange={utils.setFieldValue(form, 'password')} label='password' />
+
+        <Button isDisabled={signInResult.fetching} onPress={onClickSignIn} marginTop='size-500' variant='cta'>Sign In</Button>
+      </Form>
+    </>
   )
 }
 
