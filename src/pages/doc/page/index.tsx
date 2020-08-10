@@ -2,7 +2,7 @@ import * as React from 'react'
 import { useQuery, useMutation } from 'urql'
 import { useFormik } from 'formik'
 import { View, Button, Form, Flex, MenuTrigger, ActionButton, Menu, Item, Text, TextField, ProgressCircle, Breadcrumbs } from '@adobe/react-spectrum'
-
+import Loading from '../../../components/Loading'
 import More from '@spectrum-icons/workflow/More'
 import Delete from '@spectrum-icons/workflow/Delete'
 
@@ -90,7 +90,7 @@ export default ({
   }
 
   if (getPageResult.fetching) {
-    return <div></div>
+    return <Loading />
   }
 
   if (!getPageResult.data.page[0]) {

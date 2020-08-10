@@ -1,10 +1,12 @@
 import routes from './routes'
+const isProd = process.env.NODE_ENV === 'production'
 
 export default {
   title: 'Docmate',
 
   define: {
-    GRAPHQL_URL: process.env.NODE_ENV === 'production' ? 'http://docmate.io:8080/v1/graphql' : 'http://localhost:8080/v1/graphql'
+    HOST: isProd ? 'https://docmate.io' : 'http://localhost:8000',
+    GRAPHQL_URL: isProd ? '/gql' : 'http://localhost:8080/v1/graphql'
   },
 
   manifest: {},
@@ -12,13 +14,6 @@ export default {
   hash: true,
 
   publicPath: '/static/',
-  
-  proxy: {
-    '/graphql': {
-      target: 'http://localhost:8080/v1/graphql',
-      changeOrigin: true
-    }
-  },
 
   scripts: [
     { src: '//cdn.jsdelivr.net/npm/codemirror@5.56.0/lib/codemirror.js' },

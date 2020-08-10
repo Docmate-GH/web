@@ -70,7 +70,7 @@ function DocSettings({
         </Picker>
 
         <View marginTop='size-500'>
-          <Button onPress={form.submitForm} variant='cta'>Save</Button>
+          <Button isDisabled={udpateDocResult.fetching} onPress={form.submitForm} variant='cta'>Save</Button>
         </View>
       </Form>
     </Container>

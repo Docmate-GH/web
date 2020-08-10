@@ -8,7 +8,7 @@ import SideNav, { SideNavItem, SideNavItemLink, SideNavHead } from '../../compon
 import { GetDocByIdResult, GetDocById, CreatePageResult, CreatePage } from '../../gql'
 import Footer from '../../components/Footer'
 import Loading from '../../components/Loading'
-
+declare var HOST: string
 
 function DocAdmin({
   match,
@@ -54,7 +54,7 @@ function DocAdmin({
   }
 
   function openDoc() {
-    window.open(`http://localhost:3000/docs/${doc.id}`)
+    window.open(`${HOST}/docs/${doc.id}`)
   }
 
   function goSettings() {
