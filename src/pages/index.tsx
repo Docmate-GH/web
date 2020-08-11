@@ -73,9 +73,9 @@ function CreateDocTrigger({
                     </View>
                   </Flex>
 
-                  <RadioGroup label='Template' orientation='horizontal' value='docute'>
+                  <RadioGroup isDisabled label='Template' orientation='horizontal' value='docute'>
                     <Radio value='docute'>Docute</Radio>
-                    <Radio isDisabled value='docsify'>Docsify (comming soon...)</Radio>
+                    <Radio value='docsify'>Docsify (comming soon...)</Radio>
                   </RadioGroup>
 
                 </Form>
