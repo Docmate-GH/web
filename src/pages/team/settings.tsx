@@ -64,7 +64,7 @@ export default (props: TeamChildrenProps) => {
           <>
             <Form isQuiet>
               <Flex gap='size-200'>
-                <TextField flex='9' isDisabled label='Invite link' value={`https://docmate.io/join/${teamInfo.teams_by_pk.invite_id}`} />
+                <TextField flex='9' isDisabled label='Invite link' value={`${location.protocol}//${location.host}/join/${teamInfo.teams_by_pk.invite_id}`} />
                 <Button marginTop='size-300' alignSelf='center' flex='1' variant='cta' onPress={onClickRevokeInviteId}>Revoke</Button>
               </Flex>
             </Form>
