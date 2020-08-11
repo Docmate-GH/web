@@ -2,7 +2,7 @@ import * as React from 'react'
 import { useQuery, useMutation } from 'urql'
 import { nanoid } from 'nanoid'
 import {
-  Grid, View, Flex, ListBox, Section, Item, Button, Text, Heading, Link, ActionButton
+  Grid, View, Flex, ListBox, Section, Item, Button, Text, Heading, Link, ActionButton, Icon
 } from '@adobe/react-spectrum'
 import SideNav, { SideNavItem, SideNavItemLink, SideNavHead } from '../../components/SideNav'
 import { GetDocByIdResult, GetDocById, CreatePageResult, CreatePage, batchResortMutation } from '../../gql'
@@ -10,6 +10,7 @@ import Footer from '../../components/Footer'
 import Loading from '../../components/Loading'
 import { DragDropContext, Droppable, DroppableProvidedProps, Draggable } from 'react-beautiful-dnd'
 import { client } from '../../client'
+import DragHandleIcon from '@spectrum-icons/workflow/DragHandle'
 
 declare var HOST: string
 
@@ -26,9 +27,11 @@ function DocAdmin({
     }
   })
 
-  const [ reOrderedPage, setReorderedPage ] = React.useState(null as null | GetDocByIdResult['doc_by_pk']['pages'])
+  const [reOrderedPage, setReorderedPage] = React.useState(null as null | GetDocByIdResult['doc_by_pk']['pages'])
 
   const [createPageResult, createPage] = useMutation<CreatePageResult>(CreatePage)
+
+  const [selectedSlug, setSelectedSlug] = React.useState(null as null | string)
 
   React.useEffect(() => {
     getDoc()
@@ -71,6 +74,7 @@ function DocAdmin({
   }
 
   function onClickPage(page: GetDocByIdResult['doc_by_pk']['pages'][0]) {
+    setSelectedSlug(page.slug)
     history.push(`/doc/${doc.id}/page/${page.slug}`)
   }
 
@@ -157,15 +161,22 @@ function DocAdmin({
 
                     </SideNavItem>
 
+                    {/* <View marginStart='size-150' marginBottom='size-150'>
+                      <small style={{ color: 'GrayText' }}>Tips: Drag to re-order</small>
+                    </View> */}
                     <Droppable droppableId={docId}>
                       {(provided) => {
                         return (
-                          <SideNavItem ref={provided.innerRef} {...provided.droppableProps}>
+                          <div ref={provided.innerRef} {...provided.droppableProps}>
                             {pages.map((page, index) => {
-                              return <DragablePage key={page.id} onClickPage={onClickPage} page={page} index={index} />
+                              return (
+                                <SideNavItem selected={selectedSlug === page.slug}>
+                                  <DragablePage key={page.id} onClickPage={onClickPage} page={page} index={index} />
+                                </SideNavItem>
+                              )
                             })}
                             {provided.placeholder}
-                          </SideNavItem>
+                          </div>
                         )
                       }}
                     </Droppable>
@@ -209,7 +220,13 @@ function DragablePage(props: {
   return (
     <Draggable draggableId={props.page.id} index={props.index}>
       {provided => (
-        <SideNavItemLink onClick={_ => props.onClickPage(props.page)} ref={provided.innerRef} {...provided.dragHandleProps} {...provided.draggableProps}>{props.page.title}</SideNavItemLink>
+        <Flex direction='row'>
+          <SideNavItemLink onClick={_ => props.onClickPage(props.page)} ref={provided.innerRef} {...provided.dragHandleProps} {...provided.draggableProps}>
+            <Text>
+              {props.page.title}
+            </Text>
+          </SideNavItemLink>
+        </Flex>
       )}
     </Draggable>
   )

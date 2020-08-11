@@ -101,7 +101,6 @@ export default ({
     const res = await deletePage({
       pageId: page.id
     })
-    console.log(res)
     history.push(`/doc/${docId}`)
   }
 
@@ -109,7 +108,6 @@ export default ({
 
   async function onClickSave() {
     const values = await mainForm.submitForm()
-    console.log(values)
   }
 
   return (
