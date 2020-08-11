@@ -112,11 +112,19 @@ query($docId: uuid!) {
       title, id
     }, default_page, 
     id, title, pages(
+      order_by: [
+        {
+          index: asc
+        },
+        {
+          created_at: asc
+        }
+      ],
       where: {
         deleted_at: { _is_null: true }
       }
     ) {
-      slug, title
+      slug, title, id
     }
   }
 }
@@ -275,3 +283,20 @@ mutation($teamId: uuid!, $input: teams_set_input) {
   }
 }
 `
+
+export const batchResortMutation = (ids: Array<string>) => {
+
+  return `
+      mutation {
+        ${ids.map((id, index) => {
+          return `
+            update_${index}: update_page_by_pk(pk_columns: {id: "${id}"}, _set:{
+              index: ${index}
+            }) {
+              index
+            }
+          `
+        }).join('\n')}
+      }      
+      `
+}

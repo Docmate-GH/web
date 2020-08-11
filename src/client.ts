@@ -6,7 +6,7 @@ declare const GRAPHQL_URL: string
 
 export const client = createClient({
   url: GRAPHQL_URL,
-  requestPolicy: 'cache-and-network',
+  requestPolicy: 'cache-first',
   fetchOptions() {
 
     const headers = {}

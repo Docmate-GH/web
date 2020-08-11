@@ -17,16 +17,18 @@ export default function SideNav(props: {
 }
 
 
-export function SideNavItem(props: {
-  children: any,
-  selected?: boolean
-}) {
+
+export const SideNavItem = React.forwardRef((props: {
+  selected?: boolean,
+  children?: any,
+  onClick?: any
+}, ref: any) => {
   return (
-    <li className={classnames('spectrum-SideNav-item', { 'is-selected': props.selected === true })} >
+    <li ref={ref} {...props} className={classnames('spectrum-SideNav-item', { 'is-selected': props.selected === true })} >
       {props.children}
     </li>
   )
-}
+})
 
 export function SideNavHead(props: {
   children: any,
@@ -37,8 +39,11 @@ export function SideNavHead(props: {
   )
 }
 
-export function SideNavItemLink(props) {
-  return (
-    <a onClick={props.onClick} className='spectrum-SideNav-itemLink'>{props.children}</a>
-  )
-}
+
+
+export const SideNavItemLink = React.forwardRef((props: {
+  onClick?: any,
+  children?: any
+}, ref: any) => {
+  return <a ref={ref} {...props} onClick={props.onClick} className='spectrum-SideNav-itemLink'>{props.children}</a>
+})

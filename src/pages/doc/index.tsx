@@ -5,9 +5,12 @@ import {
   Grid, View, Flex, ListBox, Section, Item, Button, Text, Heading, Link, ActionButton
 } from '@adobe/react-spectrum'
 import SideNav, { SideNavItem, SideNavItemLink, SideNavHead } from '../../components/SideNav'
-import { GetDocByIdResult, GetDocById, CreatePageResult, CreatePage } from '../../gql'
+import { GetDocByIdResult, GetDocById, CreatePageResult, CreatePage, batchResortMutation } from '../../gql'
 import Footer from '../../components/Footer'
 import Loading from '../../components/Loading'
+import { DragDropContext, Droppable, DroppableProvidedProps, Draggable } from 'react-beautiful-dnd'
+import { client } from '../../client'
+
 declare var HOST: string
 
 function DocAdmin({
@@ -23,11 +26,17 @@ function DocAdmin({
     }
   })
 
+  const [ reOrderedPage, setReorderedPage ] = React.useState(null as null | GetDocByIdResult['doc_by_pk']['pages'])
+
   const [createPageResult, createPage] = useMutation<CreatePageResult>(CreatePage)
 
   React.useEffect(() => {
     getDoc()
   }, [])
+
+  React.useEffect(() => {
+    setReorderedPage(null)
+  }, [getDocReuslt.data])
 
   if (getDocReuslt.fetching) {
     return <Loading />
@@ -61,80 +70,148 @@ function DocAdmin({
     history.push(`/doc/${docId}`)
   }
 
+  function onClickPage(page: GetDocByIdResult['doc_by_pk']['pages'][0]) {
+    history.push(`/doc/${doc.id}/page/${page.slug}`)
+  }
+
+  async function onDragEnd(result) {
+    if (!result.destination) {
+      return
+    }
+
+    if (
+      result.destination.droppableId === result.source.droppableId &&
+      result.destination.index === result.source.index
+    ) {
+      return
+    }
+
+    const pages = Array.from(doc.pages)
+    const p = pages.find(page => page.id === result.draggableId)
+    pages.splice(result.source.index, 1)
+    pages.splice(result.destination.index, 0, p)
+
+    const resortMutation = batchResortMutation(pages.map(page => page.id))
+
+    setReorderedPage(pages)
+
+    const resortResult = await client.mutation(resortMutation).toPromise()
+
+    if (resortResult.error) {
+      // TODO: resort error
+    }
+  }
+
+  const pages = reOrderedPage || doc.pages
+
   return (
     <>
-      <Flex direction='column' height='100%'>
-        <View backgroundColor='static-white'>
-          <Flex justifyContent='center'>
-            <Flex height='size-600' width='960px' justifyContent='space-between'>
-              <Flex flex='1'>
-                <View alignSelf='center' paddingStart='size-200'>
-                  <Heading level={3} UNSAFE_style={{ cursor: 'pointer' }}>
-                    <div onClick={_ => history.push('/app')}>
-                      Docmate
-                  </div>
-                  </Heading>
-                </View>
-              </Flex>
-              <Flex justifyContent='center' flex='1'>
-                <Heading level={3} alignSelf='center'>
-                  {doc.team.title} / {doc.title}
-                </Heading>
-              </Flex>
+      <DragDropContext onDragEnd={onDragEnd}>
 
-              <Flex justifyContent='end' marginEnd='size-100' flex='1'>
-                <Button alignSelf='center' variant='secondary' onPress={openDoc} >Open Doc</Button>
+        <Flex direction='column' height='100%'>
+          <View backgroundColor='static-white'>
+            <Flex justifyContent='center'>
+              <Flex height='size-600' width='960px' justifyContent='space-between'>
+                <Flex flex='1'>
+                  <View alignSelf='center' paddingStart='size-200'>
+                    <Heading level={3} UNSAFE_style={{ cursor: 'pointer' }}>
+                      <div onClick={_ => history.push('/app')}>
+                        Docmate
+                  </div>
+                    </Heading>
+                  </View>
+                </Flex>
+                <Flex justifyContent='center' flex='1'>
+                  <Heading level={3} alignSelf='center'>
+                    {doc.team.title} / {doc.title}
+                  </Heading>
+                </Flex>
+
+                <Flex justifyContent='end' marginEnd='size-100' flex='1'>
+                  <Button alignSelf='center' variant='secondary' onPress={openDoc} >Open Doc</Button>
+                </Flex>
               </Flex>
             </Flex>
-          </Flex>
-        </View>
+          </View>
 
-        <Flex justifyContent='center'>
-          <Flex width='960px'>
-            <View>
-              <View UNSAFE_className='rounded' backgroundColor='static-white' width='size-3000' marginY='size-200' paddingX='size-200' paddingTop='size-100' paddingBottom='size-200' UNSAFE_style={{ boxSizing: 'border-box' }}>
-                <SideNav>
-                  <SideNavItem>
-                    <SideNavHead>
-                      Doc
-            </SideNavHead>
+          <Flex justifyContent='center'>
+            <Flex width='960px'>
+              <View>
+                <View UNSAFE_className='rounded' backgroundColor='static-white' width='size-3000' marginY='size-200' paddingX='size-200' paddingTop='size-100' paddingBottom='size-200' UNSAFE_style={{ boxSizing: 'border-box' }}>
+                  <SideNav>
+                    <SideNavItem>
+                      <SideNavHead>
+                        Doc
+                    </SideNavHead>
+
+                    </SideNavItem>
+
                     <SideNavItem>
                       <SideNavItemLink onClick={goSettings}>Settings</SideNavItemLink>
                     </SideNavItem>
-                  </SideNavItem>
 
-                  <SideNavItem>
-                    <SideNavHead>
-                      Pages
-            </SideNavHead>
-                    {doc.pages.map(page => {
-                      return (
-                        <SideNavItem key={page.id}>
-                          <SideNavItemLink onClick={_ => history.push(`/doc/${doc.id}/page/${page.slug}`)}>{page.title}</SideNavItemLink>
-                        </SideNavItem>
-                      )
-                    })}
-                  </SideNavItem>
+                    <SideNavItem>
+                      <SideNavHead>
+                        Pages
+                      </SideNavHead>
 
-                </SideNav>
+                    </SideNavItem>
 
-                <View UNSAFE_className='text-center' paddingY='size-100' >
-                  <ActionButton onPress={onCreateNewPage} >New Page</ActionButton>
+                    <Droppable droppableId={docId}>
+                      {(provided) => {
+                        return (
+                          <SideNavItem ref={provided.innerRef} {...provided.droppableProps}>
+                            {pages.map((page, index) => {
+                              return <DragablePage key={page.id} onClickPage={onClickPage} page={page} index={index} />
+                            })}
+                            {provided.placeholder}
+                          </SideNavItem>
+                        )
+                      }}
+                    </Droppable>
+
+                  </SideNav>
+
+                  <View UNSAFE_className='text-center' paddingY='size-100' >
+                    <ActionButton onPress={onCreateNewPage} >New Page</ActionButton>
+                  </View>
                 </View>
+
               </View>
 
-            </View>
 
-
-            <View overflow='scroll' flex='1' margin='size-200'>
-              {React.cloneElement(children, { doc })}
-            </View>
+              <View overflow='scroll' flex='1' margin='size-200'>
+                {React.cloneElement(children, { doc })}
+              </View>
+            </Flex>
           </Flex>
-        </Flex>
 
-        <Footer />
-      </Flex>
+          <Footer />
+        </Flex>
+      </DragDropContext>
+
     </>
+  )
+}
+
+
+
+enum DragType {
+  Page = 'Page'
+}
+
+function DragablePage(props: {
+  onClickPage?: (page: GetDocByIdResult['doc_by_pk']['pages'][0]) => void
+  page: GetDocByIdResult['doc_by_pk']['pages'][0],
+  index: number
+}) {
+
+  return (
+    <Draggable draggableId={props.page.id} index={props.index}>
+      {provided => (
+        <SideNavItemLink onClick={_ => props.onClickPage(props.page)} ref={provided.innerRef} {...provided.dragHandleProps} {...provided.draggableProps}>{props.page.title}</SideNavItemLink>
+      )}
+    </Draggable>
   )
 }
 
