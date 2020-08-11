@@ -11,6 +11,12 @@ export default {
 
   manifest: {},
 
+  proxy: {
+    '/api': {
+      'target': "http://localhost:3000"
+    }
+  },
+
   hash: true,
 
   publicPath: '/static/',

@@ -1,6 +1,7 @@
 import { createClient, Provider } from 'urql'
 import * as React from 'react'
 import { userService } from './service'
+import axios from 'axios'
 
 declare const GRAPHQL_URL: string
 
@@ -18,6 +19,12 @@ export const client = createClient({
     return {
       headers
     }
+  }
+})
+
+export const httpClient = axios.create({
+  headers: {
+    'Authorization': `Bearer ${userService.getToken()}`
   }
 })
 

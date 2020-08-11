@@ -46,7 +46,6 @@ function DocAdmin({
   }
 
   if (getDocReuslt.error) {
-    console.log(getDocReuslt.error)
     return <div>Error</div>
   }
 

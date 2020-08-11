@@ -1,10 +1,11 @@
 import * as React from 'react'
 import { useQuery, useMutation } from 'urql'
 import { useFormik } from 'formik'
-import { View, Button, Form, Flex, MenuTrigger, ActionButton, Menu, Item, Text, TextField, ProgressCircle, Breadcrumbs } from '@adobe/react-spectrum'
+import { View, Button, Form, Flex, MenuTrigger, ActionButton, Menu, Item, Text, TextField, ProgressCircle, Breadcrumbs, DialogTrigger, AlertDialog } from '@adobe/react-spectrum'
 import Loading from '../../../components/Loading'
 import More from '@spectrum-icons/workflow/More'
 import Delete from '@spectrum-icons/workflow/Delete'
+import { httpClient } from '../../../client'
 
 const GetPage = `
 query($docId: uuid!, $pageSlug: String!) {
@@ -73,7 +74,6 @@ export default ({
       content: getPageResult.data?.page[0]?.content
     },
     async onSubmit(values) {
-      console.log(values)
       const res = await editPage({
         pageId: getPageResult.data.page[0].id,
         input: {
@@ -85,7 +85,6 @@ export default ({
   })
 
   if (getPageResult.error) {
-    console.log(getPageResult.error)
     return <div></div>
   }
 
@@ -164,13 +163,15 @@ export default ({
   )
 }
 
-
+let imageIndex = 0
 declare var CodeMirror: any
 function Editor(props: {
   id: string,
   value: string,
   onChange?: (content: string) => void
 }) {
+
+  const [ proLimitDialogVisible, setProLimitDialogVisible ] = React.useState(false)
 
   const container = React.useRef(null as HTMLDivElement | null)
 
@@ -180,7 +181,6 @@ function Editor(props: {
     const $container = container.current!
 
     const codeMirror = CodeMirror((elt) => {
-      console.log(elt)
       $container.parentNode.replaceChild(elt, $container)
     }, {
       value: props.value || '',
@@ -191,6 +191,38 @@ function Editor(props: {
     codeMirror.on('change', () => {
       if (props.onChange) {
         props.onChange(codeMirror.getValue())
+      }
+    })
+
+    codeMirror.on('paste', async (cm, e) => {
+      const file = e.clipboardData.files[0]
+      if (file && file.type.match('image/')) {
+        e.preventDefault()
+        // upload image
+
+        const formData = new FormData()
+        formData.append('image', file)
+
+        const appendText = (content: string) => {
+          cm.doc.replaceRange(content, cm.doc.sel.ranges[0].anchor)
+        }
+
+        const placeHolder = `{{ uploading... #${imageIndex++} }}`
+
+        try {
+          appendText(placeHolder)
+
+          const res = await httpClient.post('/api/v1/upload', formData)
+          const content = cm.getValue()
+          cm.setValue(content.replace(placeHolder, res.data.markdown))
+        } catch (e) {
+          if (e.response.data.code === 'NOT_PRO_MEMBER') {
+            // not pro member
+            setProLimitDialogVisible(true)
+          }
+          const content = cm.getValue()
+          cm.setValue(content.replace(placeHolder, ''))
+        }
       }
     })
 
@@ -214,6 +246,17 @@ function Editor(props: {
 
   return (
     <div>
+      <DialogTrigger isOpen={proLimitDialogVisible}>
+        <div></div>
+        <AlertDialog
+          onCancel={() => setProLimitDialogVisible(false)}
+          title="Upgrade to Pro plan"
+          variant="warning"
+          cancelLabel='Later'
+          primaryActionLabel="Upgrade to Pro plan">
+          Image uploading is a Pro plan feature. Please upgrade your plan to unlock.
+        </AlertDialog>
+      </DialogTrigger>
       <div style={{ minHeight: '600px' }} ref={container}></div>
     </div>
   )
