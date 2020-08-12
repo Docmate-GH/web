@@ -15,7 +15,7 @@ import AppFooter from '../components/Footer'
 function CreateDocTrigger({
   teams
 }: {
-  teams: GetUserTeamsResult['users'][0]['user_teams']
+  teams: GetUserTeamsResult['users_by_pk']['user_teams']
 }) {
   const [createDocResult, createDoc] = useMutation<CreateDocResult>(CreateDoc)
 
@@ -183,7 +183,7 @@ function Layout(props) {
 
   const [createTeamDialogOpened, setCreateTeamDialogOpened] = React.useState(false)
 
-  const teams = getUserTeamsResult.data ? getUserTeamsResult.data.users[0].user_teams : []
+  const teams = getUserTeamsResult.data ? getUserTeamsResult.data.users_by_pk.user_teams : []
 
   return (
     <div>
@@ -264,7 +264,7 @@ function DocsPannel({
   history,
   ...props
 }: {
-  teams: GetUserTeamsResult['users'][0]['user_teams'],
+  teams: GetUserTeamsResult['users_by_pk']['user_teams'],
   children: any,
   history: any,
   match: {
