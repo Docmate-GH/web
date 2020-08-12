@@ -27,7 +27,9 @@ mutation($email: String!, $password: String!) {
   }
 }
 `
-
+export type GetUserTeamParams = {
+  userId: string
+}
 export type GetUserTeamsResult = {
   users_by_pk: {
     id: string,

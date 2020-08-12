@@ -9,7 +9,7 @@ import * as yup from 'yup'
 import { View, Flex, Button, Text, IllustratedMessage, Link, Heading, Content, DialogTrigger, Footer, ActionButton, Dialog, Divider, ButtonGroup, Form, TextField, RadioGroup, Radio, Header, MenuTrigger, Menu, Item, Picker, Section } from '@adobe/react-spectrum'
 import Table, { TableHead, TableBody, TableHeadCell, TableRow, TableCell } from '../components/Table'
 import { userService } from '../service'
-import { SignInResult, SignIn, SignUpResult, SignUp, GetUserTeams, GetUserTeamsResult, GetTeamDocsResult, GetTeamDocs, CreateDocResult, CreateDoc, CreateTeam, CreateTeamParams, CreateTeamResult } from '../gql'
+import { SignInResult, SignIn, SignUpResult, SignUp, GetUserTeams, GetUserTeamsResult, GetTeamDocsResult, GetTeamDocs, CreateDocResult, CreateDoc, CreateTeam, CreateTeamParams, CreateTeamResult, GetUserTeamParams } from '../gql'
 import AppFooter from '../components/Footer'
 
 function CreateDocTrigger({
@@ -17,6 +17,7 @@ function CreateDocTrigger({
 }: {
   teams: GetUserTeamsResult['users_by_pk']['user_teams']
 }) {
+  console.log(teams)
   const [createDocResult, createDoc] = useMutation<CreateDocResult>(CreateDoc)
 
   const form = useFormik({
@@ -179,7 +180,7 @@ function Layout(props) {
 
   const [isSignUpDialog, setIsSignupDialog] = React.useState(true)
 
-  const [getUserTeamsResult, getUserTeams] = useQuery<GetUserTeamsResult>({ query: GetUserTeams, pause: !userService.isLogin() })
+  const [getUserTeamsResult, getUserTeams] = useQuery<GetUserTeamsResult, GetUserTeamParams>({ query: GetUserTeams, variables: { userId: userService.getUserInfo().id } , pause: !userService.isLogin() })
 
   const [createTeamDialogOpened, setCreateTeamDialogOpened] = React.useState(false)
 

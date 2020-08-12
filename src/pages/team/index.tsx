@@ -42,8 +42,6 @@ export default (props: {
 
     const myTeam = teams.find(team => team.team.is_personal === true)
 
-    console.log(teams)
-
     function onSelectTeam(teamId) {
       if (teamId === myTeam.team.id) {
         props.history.push('/app')
