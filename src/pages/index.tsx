@@ -180,7 +180,7 @@ function Layout(props) {
 
   const [isSignUpDialog, setIsSignupDialog] = React.useState(true)
 
-  const [getUserTeamsResult, getUserTeams] = useQuery<GetUserTeamsResult, GetUserTeamParams>({ query: GetUserTeams, variables: { userId: userService.getUserInfo().id } , pause: !userService.isLogin() })
+  const [getUserTeamsResult, getUserTeams] = useQuery<GetUserTeamsResult, GetUserTeamParams>({ query: GetUserTeams, variables: { userId: userService.getUserInfo()?.id } , pause: !userService.isLogin() })
 
   const [createTeamDialogOpened, setCreateTeamDialogOpened] = React.useState(false)
 
