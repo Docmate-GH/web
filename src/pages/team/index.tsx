@@ -25,7 +25,7 @@ export default (props: {
   },
   children?: any
 }) => {
-  const [getUserTeamsResult, getUserTeams] = useQuery<GetUserTeamsResult>({ query: GetUserTeams })
+  const [getUserTeamsResult, getUserTeams] = useQuery<GetUserTeamsResult>({ query: GetUserTeams, variables: { userId: userService.getUserInfo().id } })
   const currentTeamId = React.useRef(null as null | string)
 
   React.useEffect(() => {
@@ -38,9 +38,11 @@ export default (props: {
 
   if (getUserTeamsResult.data) {
 
-    const teams = getUserTeamsResult.data.users[0].user_teams
+    const teams = getUserTeamsResult.data.users_by_pk.user_teams
 
     const myTeam = teams.find(team => team.team.is_personal === true)
+
+    console.log(teams)
 
     function onSelectTeam(teamId) {
       if (teamId === myTeam.team.id) {

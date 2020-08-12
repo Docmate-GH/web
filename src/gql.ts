@@ -29,7 +29,7 @@ mutation($email: String!, $password: String!) {
 `
 
 export type GetUserTeamsResult = {
-  users: {
+  users_by_pk: {
     id: string,
     user_teams: {
       team: {
@@ -39,11 +39,11 @@ export type GetUserTeamsResult = {
         is_personal: boolean
       }
     }[]
-  }[],
+  },
 }
 export const GetUserTeams = `
-query {
-  users {
+query($userId: uuid!) {
+  users_by_pk(id: $userId) {
     id, user_teams {
       team {
       id, title, master, is_personal
