@@ -91,6 +91,7 @@ mutation($teamId: uuid!, $title: String!) {
 
 export type GetDocByIdResult = {
   doc_by_pk: {
+    code_highlights: string[]
     id: string
     title: string,
     team: {
@@ -108,6 +109,7 @@ export type GetDocByIdResult = {
 export const GetDocById = `
 query($docId: uuid!) {
   doc_by_pk(id: $docId) {
+    code_highlights,
     team {
       title, id
     }, default_page, 
@@ -148,7 +150,8 @@ export type UpdateDocParams = {
   docId: string,
   input: {
     title?: string,
-    default_page?: string
+    default_page?: string,
+    code_highlights?: string[]
   }
 }
 export type UpdateDocResult = {

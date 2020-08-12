@@ -65,7 +65,7 @@ function DocAdmin({
   }
 
   function openDoc() {
-    window.open(`/docs/${doc.id}`)
+    window.open(`${HOST}/docs/${doc.id}`)
   }
 
   function goSettings() {

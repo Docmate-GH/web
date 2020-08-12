@@ -7,7 +7,7 @@ import SideNav, { SideNavHead, SideNavItem, SideNavItemLink } from '../../compon
 import Loading from '../../components/Loading'
 
 export type TeamChildrenProps = {
-  currentTeam: GetUserTeamsResult['users'][0]['user_teams'][0],
+  currentTeam: GetUserTeamsResult['users_by_pk']['user_teams'][0],
   history: any
 }
 
