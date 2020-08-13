@@ -7,7 +7,7 @@ export default {
   manifest: {},
 
   define: {
-    GQL_PATH: process.env.GQ_PATH || ''
+    GQL_PATH: process.env.GQL_PATH || ''
   },
 
   hash: true,
