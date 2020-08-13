@@ -6,6 +6,10 @@ export default {
 
   manifest: {},
 
+  define: {
+    GQL_PATH: process.env.GQ_PATH || ''
+  },
+
   hash: true,
 
   publicPath: '/static/',
