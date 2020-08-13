@@ -4,7 +4,7 @@ import { userService } from './service'
 import axios from 'axios'
 
 export const client = createClient({
-  url: `${location.protocol}//${location.host}:8080/v1/graphql`,
+  url: `${location.protocol}//${location.hostname}:8080/v1/graphql`,
   requestPolicy: 'cache-first',
   fetchOptions() {
 
