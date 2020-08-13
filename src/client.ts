@@ -3,10 +3,8 @@ import * as React from 'react'
 import { userService } from './service'
 import axios from 'axios'
 
-declare const GRAPHQL_URL: string
-
 export const client = createClient({
-  url: GRAPHQL_URL,
+  url: `${location.protocol}//${location.host}:8080/v1/graphql`,
   requestPolicy: 'cache-first',
   fetchOptions() {
 

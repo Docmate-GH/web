@@ -12,8 +12,6 @@ import { DragDropContext, Droppable, DroppableProvidedProps, Draggable } from 'r
 import { client } from '../../client'
 import DragHandleIcon from '@spectrum-icons/workflow/DragHandle'
 
-declare var HOST: string
-
 function DocAdmin({
   match,
   history,
@@ -65,7 +63,7 @@ function DocAdmin({
   }
 
   function openDoc() {
-    window.open(`${HOST}/docs/${doc.id}`)
+    window.open(`${location.protocol}//${location.host}/docs/${doc.id}`)
   }
 
   function goSettings() {
