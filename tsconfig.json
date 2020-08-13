@@ -1,10 +1,14 @@
 {
   "compilerOptions": {
     "target": "es6",
+    "module": "es6",
+    "moduleResolution": "node",
+    "jsx": "react",
+    "baseUrl": ".",
     "strictNullChecks": true,
-    "jsx": "react"
-  },
-  "files": [
-    "src/*"
-  ]
+    "paths": {
+      "components": ["components"]
+    },
+    "allowSyntheticDefaultImports": true
+  }
 }

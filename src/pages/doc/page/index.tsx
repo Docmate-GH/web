@@ -75,7 +75,7 @@ export default ({
     },
     async onSubmit(values) {
       const res = await editPage({
-        pageId: getPageResult.data.page[0].id,
+        pageId: getPageResult.data!.page[0].id,
         input: {
           title: values.title,
           content: values.content
@@ -92,7 +92,7 @@ export default ({
     return <Loading />
   }
 
-  if (!getPageResult.data.page[0]) {
+  if (!getPageResult.data!.page[0]) {
     return <div>404</div>
   }
 
@@ -103,7 +103,7 @@ export default ({
     history.push(`/doc/${docId}`)
   }
 
-  const page = getPageResult.data.page[0]!
+  const page = getPageResult.data!.page[0]!
 
   async function onClickSave() {
     const values = await mainForm.submitForm()
@@ -181,7 +181,7 @@ function Editor(props: {
     const $container = container.current!
 
     const codeMirror = CodeMirror((elt) => {
-      $container.parentNode.replaceChild(elt, $container)
+      $container.parentNode!.replaceChild(elt, $container)
     }, {
       value: props.value || '',
       lineWrapping: true,

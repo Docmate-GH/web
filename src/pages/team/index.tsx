@@ -25,12 +25,16 @@ export default (props: {
   },
   children?: any
 }) => {
-  const [getUserTeamsResult, getUserTeams] = useQuery<GetUserTeamsResult>({ query: GetUserTeams, variables: { userId: userService.getUserInfo().id } })
+  const [getUserTeamsResult, getUserTeams] = useQuery<GetUserTeamsResult>({ query: GetUserTeams, variables: { userId: userService.getUserInfo()?.id }, pause: !userService.isLogin() })
   const currentTeamId = React.useRef(null as null | string)
 
   React.useEffect(() => {
     getUserTeams()
   }, [])
+
+  if (!userService.isLogin()) {
+    location.href = '/'
+  }
 
   if (getUserTeamsResult.fetching) {
     return <Loading />
@@ -40,7 +44,7 @@ export default (props: {
 
     const teams = getUserTeamsResult.data.users_by_pk.user_teams
 
-    const myTeam = teams.find(team => team.team.is_personal === true)
+    const myTeam = teams.find(team => team.team.is_personal === true)!
 
     function onSelectTeam(teamId) {
       if (teamId === myTeam.team.id) {
@@ -62,9 +66,9 @@ export default (props: {
       currentTeamId.current = selectedTeamId
     }
 
-    const currentTeam = teams.find(team => team.team.id === selectedTeamId)
+    const currentTeam = teams.find(team => team.team.id === selectedTeamId)!
 
-    const isOwner = currentTeam.team.master === userService.getUserInfo().id
+    const isOwner = currentTeam.team.master === userService.getUserInfo()!.id
 
     const currentView = (() => {
       const path = [...props.history.location.pathname.split('/')]
@@ -80,7 +84,6 @@ export default (props: {
         <View marginY='size'>
           <Picker selectedKey={selectedTeamId} placeholder='Team' onSelectionChange={onSelectTeam}>
             {teams.map(team => {
-              const isOwner = team.team.master === userService.getUserInfo().id
               return (
                 <Item key={team.team.id}>{team.team.title}</Item>
               )
@@ -88,9 +91,9 @@ export default (props: {
           </Picker>
         </View>
 
-        {selectedTeamId && (
+        {selectedTeamId ? (
           <Flex direction='row' gap='size-200'>
-            {isOwner && props.history.location.pathname !== '/' && (
+            {(isOwner && props.history.location.pathname !== '/') ? (
               <View width='size-2400'>
                 <SideNav>
                   {/* <SideNavHead>
@@ -109,7 +112,7 @@ export default (props: {
                   </SideNavItem>
                 </SideNav>
               </View>
-            )}
+            ) : <></>}
             <View flex='1'>
               {React.cloneElement(props.children, {
                 currentTeam,
@@ -117,7 +120,7 @@ export default (props: {
               })}
             </View>
           </Flex>
-        )}
+        ) : <></>}
       </Flex>
 
     )

@@ -47,7 +47,7 @@ function DocAdmin({
     return <div>Error</div>
   }
 
-  const doc = getDocReuslt.data.doc_by_pk
+  const doc = getDocReuslt.data!.doc_by_pk
 
   async function onCreateNewPage() {
     const res = await createPage({
@@ -90,7 +90,7 @@ function DocAdmin({
     const pages = Array.from(doc.pages)
     const p = pages.find(page => page.id === result.draggableId)
     pages.splice(result.source.index, 1)
-    pages.splice(result.destination.index, 0, p)
+    pages.splice(result.destination.index, 0, p!)
 
     const resortMutation = batchResortMutation(pages.map(page => page.id))
 
@@ -218,7 +218,7 @@ function DragablePage(props: {
     <Draggable draggableId={props.page.id} index={props.index}>
       {provided => (
         <Flex direction='row'>
-          <SideNavItemLink onClick={_ => props.onClickPage(props.page)} ref={provided.innerRef} {...provided.dragHandleProps} {...provided.draggableProps}>
+          <SideNavItemLink onClick={_ => props.onClickPage && props.onClickPage(props.page)} ref={provided.innerRef} {...provided.dragHandleProps} {...provided.draggableProps}>
             <Text>
               {props.page.title}
             </Text>

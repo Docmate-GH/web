@@ -1,13 +1,12 @@
 import * as React from 'react'
 import { Provider, useMutation, useQuery, OperationResult } from 'urql'
-import client from '../client'
+import client, { httpClient } from '../client'
 // @ts-expect-error
 import { history } from 'umi'
 import * as utils from '../utils'
 import { useFormik } from 'formik'
-import * as yup from 'yup'
+const yup = require('yup')
 import { View, Flex, Button, Text, IllustratedMessage, Link, Heading, Content, DialogTrigger, Footer, ActionButton, Dialog, Divider, ButtonGroup, Form, TextField, RadioGroup, Radio, Header, MenuTrigger, Menu, Item, Picker, Section } from '@adobe/react-spectrum'
-import Table, { TableHead, TableBody, TableHeadCell, TableRow, TableCell } from '../components/Table'
 import { userService } from '../service'
 import { SignInResult, SignIn, SignUpResult, SignUp, GetUserTeams, GetUserTeamsResult, GetTeamDocsResult, GetTeamDocs, CreateDocResult, CreateDoc, CreateTeam, CreateTeamParams, CreateTeamResult, GetUserTeamParams } from '../gql'
 import AppFooter from '../components/Footer'
@@ -94,43 +93,6 @@ function CreateDocTrigger({
   )
 }
 
-function Docs({
-  docs,
-  onClickDoc
-}: {
-  docs: GetTeamDocsResult['doc'],
-  onClickDoc?: (doc: GetTeamDocsResult['doc'][0]) => void
-}) {
-
-  return (
-    <Table>
-      <TableHead>
-        <TableHeadCell>
-          <Text>Doc</Text>
-        </TableHeadCell>
-
-        <TableHeadCell>
-          <Text>Created Date</Text>
-        </TableHeadCell>
-
-      </TableHead>
-
-      <TableBody>
-        {docs.map(doc => {
-
-          return (
-            <TableRow key={doc.id} onClick={onClickDoc ? _ => onClickDoc(doc) : utils.noop}>
-              <TableCell>{doc.title}</TableCell>
-              <TableCell>{(new Date(doc.created_at).toLocaleString())}</TableCell>
-            </TableRow>
-          )
-        })}
-      </TableBody>
-
-    </Table>
-  )
-}
-
 function CreateTeamTrigger({
   isOpen,
   onClickCancel,
@@ -180,7 +142,8 @@ function Layout(props) {
 
   const [isSignUpDialog, setIsSignupDialog] = React.useState(true)
 
-  const [getUserTeamsResult, getUserTeams] = useQuery<GetUserTeamsResult, GetUserTeamParams>({ query: GetUserTeams, variables: { userId: userService.getUserInfo()?.id } , pause: !userService.isLogin() })
+  // @ts-expect-error
+  const [getUserTeamsResult, getUserTeams] = useQuery<GetUserTeamsResult, GetUserTeamParams>({ query: GetUserTeams, variables: { userId: userService.getUserInfo()?.id }, pause: !userService.isLogin() })
 
   const [createTeamDialogOpened, setCreateTeamDialogOpened] = React.useState(false)
 
@@ -211,7 +174,7 @@ function Layout(props) {
             </Flex>
 
             <Flex justifyContent='center'>
-              {userService.isLogin() && (
+              {userService.isLogin() ? (
                 <Flex alignSelf='center' gap='size-100'>
                   <View alignSelf='center'>
                     <CreateDocTrigger teams={teams} />
@@ -220,7 +183,7 @@ function Layout(props) {
                   <Flex alignSelf='center'>
                     <MenuTrigger>
                       <ActionButton isQuiet UNSAFE_style={{ cursor: 'pointer' }}>
-                        <img width='28px' style={{ borderRadius: '50%' }} src={`https://www.gravatar.com/avatar/${userService.getUserInfo().avatar}`} />
+                        <img width='28px' style={{ borderRadius: '50%' }} src={`https://www.gravatar.com/avatar/${userService.getUserInfo()?.avatar}`} />
                       </ActionButton>
                       <Menu onAction={key => {
                         if (key === 'signout') {
@@ -242,7 +205,7 @@ function Layout(props) {
                   </Flex>
 
                 </Flex>
-              )}
+              ) : <></>}
             </Flex>
 
           </Flex>
@@ -387,22 +350,28 @@ function SignInForm() {
       password: ''
     },
     async onSubmit(values) {
-      const result = await signIn({
-        email: values.email,
-        password: values.password
-      })
-      if (!result.error) {
-        const signInData = result.data!.signIn
-        userService.saveToken(signInData.token)
+      try {
+        const result = await httpClient.post<{
+          message: string,
+          id: string,
+          email: string,
+          avatar: string,
+          username: string
+        }>('/api/v1/signIn', {
+          email: values.email,
+          password: values.password
+        })
+        console.log(result.data)
         userService.saveUserInfo({
-          email: signInData.email,
-          id: signInData.id,
-          avatar: signInData.avatar,
-          username: signInData.username
+          email: result.data.email,
+          id: result.data.id,
+          avatar: result.data.avatar,
+          username: result.data.username
         })
         location.reload()
-      } else {
-        setErrorMessage(result.error!.graphQLErrors[0].message)
+      } catch (e) {
+        const errorMessage = e.response.data.message
+        setErrorMessage(errorMessage)
       }
     }
   })

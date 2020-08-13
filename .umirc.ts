@@ -14,6 +14,14 @@ export default {
 
   publicPath: '/static/',
 
+  forkTSChecker: {},
+
+  proxy: {
+    '/api': {
+      target: 'http://localhost:3000'
+    }
+  },
+
   scripts: [
     { src: '//cdn.jsdelivr.net/npm/codemirror@5.56.0/lib/codemirror.js' },
     { src: '//cdn.jsdelivr.net/npm/codemirror@5.56.0/mode/markdown/markdown.js' }

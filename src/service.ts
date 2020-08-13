@@ -1,3 +1,5 @@
+import * as Cookies from 'js-cookie'
+import axios from 'axios'
 
 type UserInfo = {
   username: string,
@@ -6,10 +8,6 @@ type UserInfo = {
   avatar: string
 }
 class UserService {
-  saveToken(token: string) {
-    localStorage.setItem('__TOKEN', token)
-  }
-
   saveUserInfo(userInfo: UserInfo) {
     localStorage.setItem('__USER', JSON.stringify(userInfo))
   }
@@ -24,16 +22,16 @@ class UserService {
   }
 
   getToken() {
-    return localStorage.getItem('__TOKEN')
+    return Cookies.get('__DOCMATE__TOKEN__')
   }
 
   isLogin() {
-    return this.getToken() !== null
+    return this.getToken() !== undefined
   }
 
-  signOut() {
+  async signOut() {
     localStorage.removeItem('__USER')
-    localStorage.removeItem('__TOKEN')
+    await axios.post('/api/v1/signOut')
     location.href = '/'
   }
 }
