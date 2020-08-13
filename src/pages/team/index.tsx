@@ -44,15 +44,15 @@ export default (props: {
 
     function onSelectTeam(teamId) {
       if (teamId === myTeam.team.id) {
-        props.history.push('/app')
+        props.history.push('/')
       } else {
-        props.history.push(`/app/team/${teamId}`)
+        props.history.push(`/team/${teamId}`)
       }
     }
 
     let selectedTeamId: string
 
-    if (props.history.location.pathname === '/app') {
+    if (props.history.location.pathname === '/') {
       selectedTeamId = myTeam.team.id
     } else {
       selectedTeamId = props.match.params.teamId
@@ -68,7 +68,6 @@ export default (props: {
 
     const currentView = (() => {
       const path = [...props.history.location.pathname.split('/')]
-      path.shift()
       if (path.length === 3) {
         return 'all-docs'
       } else if (path[3] === 'settings') {
@@ -91,7 +90,7 @@ export default (props: {
 
         {selectedTeamId && (
           <Flex direction='row' gap='size-200'>
-            {isOwner && props.history.location.pathname !== '/app' && (
+            {isOwner && props.history.location.pathname !== '/' && (
               <View width='size-2400'>
                 <SideNav>
                   {/* <SideNavHead>
@@ -99,13 +98,13 @@ export default (props: {
                   </SideNavHead> */}
                   <SideNavItem selected={currentView === 'all-docs'}>
                     <SideNavItemLink onClick={_ => {
-                      props.history.push(`/app/team/${selectedTeamId}`)
+                      props.history.push(`/team/${selectedTeamId}`)
                     }}>Docs</SideNavItemLink>
                   </SideNavItem>
 
                   <SideNavItem selected={currentView === 'settings'}>
                     <SideNavItemLink onClick={_ => {
-                      props.history.push(`/app/team/${selectedTeamId}/settings`)
+                      props.history.push(`/team/${selectedTeamId}/settings`)
                     }} >Settings</SideNavItemLink>
                   </SideNavItem>
                 </SideNav>

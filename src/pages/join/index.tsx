@@ -22,7 +22,7 @@ export default (props: {
       const joinTeamResult = await client.mutation<JoinTeamResult, JoinTeamParasm>(JoinTeam, { inviteId: inviteId }).toPromise()
 
       if (!joinTeamResult.error) {
-        props.history.push(`/app/team/${joinTeamResult.data!.joinTeam.teamId}`)
+        props.history.push(`/team/${joinTeamResult.data!.joinTeam.teamId}`)
       } else {
         // TODO:
         alert('Invalid invite link', { type: 'danger' })

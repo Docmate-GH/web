@@ -32,7 +32,7 @@ function CreateDocTrigger({
       })
 
       if (result.data?.insert_doc_one.id) {
-        history.push(`/doc/${result.data.insert_doc_one.id}`)
+        location.href = `/doc/${result.data.insert_doc_one.id}`
       } else {
         // TODO: create page error
       }
@@ -85,7 +85,7 @@ function CreateDocTrigger({
 
             <ButtonGroup>
               <Button variant='secondary' onPress={close}>Cancel</Button>
-              <Button variant='cta' onPress={form.submitForm}>Create</Button>
+              <Button isDisabled={createDocResult.fetching} variant='cta' onPress={form.submitForm}>Create</Button>
             </ButtonGroup>
           </Dialog>
         )
@@ -193,7 +193,7 @@ function Layout(props) {
           const team = result.data!.createTeam
           setCreateTeamDialogOpened(false)
           setTimeout(() => {
-            history.push(`/app/team/${team.teamId}`)
+            history.push(`/team/${team.teamId}`)
 
           }, 0)
         }}
@@ -205,7 +205,7 @@ function Layout(props) {
           <Flex direction='row' width='960px' justifyContent='space-between'>
             <Flex justifyContent='center'>
               <Heading alignSelf='center' level={3}>
-                <a style={{ cursor: 'pointer' }} onClick={_ => history.push('/app')}>Docmate</a>
+                <a style={{ cursor: 'pointer' }} onClick={_ => history.push('/')}>Docmate</a>
               </Heading>
               <small>Alpha</small>
             </Flex>

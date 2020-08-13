@@ -116,7 +116,7 @@ function DocAdmin({
                 <Flex flex='1'>
                   <View alignSelf='center' paddingStart='size-200'>
                     <Heading level={3} UNSAFE_style={{ cursor: 'pointer' }}>
-                      <div onClick={_ => history.push('/app')}>
+                      <div onClick={_ => history.push('/')}>
                         Docmate
                   </div>
                     </Heading>

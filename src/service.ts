@@ -34,7 +34,7 @@ class UserService {
   signOut() {
     localStorage.removeItem('__USER')
     localStorage.removeItem('__TOKEN')
-    location.href = '/app'
+    location.href = '/'
   }
 }
 
