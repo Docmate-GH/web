@@ -205,7 +205,8 @@ export type GetTeamFullInfoResult = {
       user: {
         id: string,
         email: string,
-        username: string
+        username: string,
+        avatar: string
       }
     }[]
   }
@@ -216,7 +217,7 @@ query($teamId:uuid!) {
     invite_id,
     team_users {
       user {
-        id, email, username
+        id, email, username, avatar
       }
     }
   }

@@ -89,7 +89,7 @@ function Member({
   user: GetTeamFullInfoResult['teams_by_pk']['team_users'][0]
   currentTeam: TeamChildrenProps['currentTeam']
 }) {
-  const avatar = `https://gravatar.com/avatar/${md5(user.user.email)}?s=64`
+  const avatar = user.user.avatar
 
   async function onClickRemoveMember(userId: string) {
     const removeMemberResult = await client.mutation<RemoveMemberReuslt, RemoveMemberParams>(RemoveMember, { teamId: currentTeam.team.id, userId: userId }).toPromise()

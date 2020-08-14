@@ -190,7 +190,7 @@ function Layout(props) {
                   <Flex alignSelf='center'>
                     <MenuTrigger>
                       <ActionButton isQuiet UNSAFE_style={{ cursor: 'pointer' }}>
-                        <img width='28px' style={{ borderRadius: '50%' }} src={`https://www.gravatar.com/avatar/${userService.getUserInfo()?.avatar}`} />
+                        <img width='28px' style={{ borderRadius: '50%' }} src={userService.getUserInfo()?.avatar} />
                       </ActionButton>
                       <Menu onAction={key => {
                         if (key === 'signout') {

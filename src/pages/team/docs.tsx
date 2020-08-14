@@ -25,7 +25,7 @@ export default (props: TeamChildrenProps) => {
           <Text>Doc</Text>
         </TableHeadCell>
 
-        <TableHeadCell style={{ textAlign: 'right' }} flex='3'>
+        <TableHeadCell style={{ textAlign: 'right' }} flex='4'>
           <Text>Created Date</Text>
         </TableHeadCell>
 
@@ -49,7 +49,7 @@ export default (props: TeamChildrenProps) => {
                   <Text>{doc.title}</Text>
                 </Flex>
               </TableCell>
-              <TableCell flex='3' style={{ textAlign: 'right' }}>{(new Date(doc.created_at).toLocaleString())}</TableCell>
+              <TableCell flex='4' style={{ textAlign: 'right' }}>{(new Date(doc.created_at).toLocaleString())}</TableCell>
             </TableRow>
           )
         })}
