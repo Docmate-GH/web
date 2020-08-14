@@ -81,9 +81,10 @@ export type CreateDocResult = {
   }
 }
 export const CreateDoc = `
-mutation($teamId: uuid!, $title: String!) {
+mutation($teamId: uuid!, $title: String!, $visibility: String!) {
   insert_doc_one(object: {
     team_id: $teamId,
+    visibility: $visibility,
     title: $title
   }) {
     id

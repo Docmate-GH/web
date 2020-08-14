@@ -16,18 +16,20 @@ function CreateDocTrigger({
 }: {
   teams: GetUserTeamsResult['users_by_pk']['user_teams']
 }) {
-  console.log(teams)
+
   const [createDocResult, createDoc] = useMutation<CreateDocResult>(CreateDoc)
 
   const form = useFormik({
     initialValues: {
+      visibility: 'public',
       title: '',
       teamId: teams[0]?.team.id || ''
     },
     async onSubmit(values) {
       const result = await createDoc({
         title: values.title,
-        teamId: values.teamId
+        teamId: values.teamId,
+        visibility: values.visibility
       })
 
       if (result.data?.insert_doc_one.id) {
@@ -72,6 +74,11 @@ function CreateDocTrigger({
                       <TextField width='100%' value={form.values.title} onChange={utils.setFieldValue(form, 'title')} label='Doc Title' isRequired />
                     </View>
                   </Flex>
+
+                  <RadioGroup label='Visibility' orientation='horizontal' value={form.values.visibility} onChange={utils.setFieldValue(form, 'visibility')}>
+                    <Radio value='public'>Public</Radio>
+                    <Radio value='private'>Only team members</Radio>
+                  </RadioGroup>
 
                   <RadioGroup isDisabled label='Template' orientation='horizontal' value='docute'>
                     <Radio value='docute'>Docute</Radio>
