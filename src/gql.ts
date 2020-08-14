@@ -93,6 +93,7 @@ mutation($teamId: uuid!, $title: String!) {
 
 export type GetDocByIdResult = {
   doc_by_pk: {
+    visibility: 'public' | 'private',
     code_highlights: string[]
     id: string
     title: string,
@@ -111,6 +112,7 @@ export type GetDocByIdResult = {
 export const GetDocById = `
 query($docId: uuid!) {
   doc_by_pk(id: $docId) {
+    visibility,
     code_highlights,
     team {
       title, id
@@ -153,7 +155,8 @@ export type UpdateDocParams = {
   input: {
     title?: string,
     default_page?: string,
-    code_highlights?: string[]
+    code_highlights?: string[],
+    visibility: 'private' | 'public'
   }
 }
 export type UpdateDocResult = {

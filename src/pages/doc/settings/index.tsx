@@ -33,7 +33,8 @@ function DocSettings({
     initialValues: {
       title: doc.title,
       default_page: doc.default_page,
-      highlights: doc.code_highlights
+      highlights: doc.code_highlights,
+      visibility: doc.visibility
     },
     async onSubmit(values) {
       const updateResult = await updateDoc({
@@ -41,7 +42,8 @@ function DocSettings({
         input: {
           default_page: values.default_page,
           title: values.title,
-          code_highlights: values.highlights
+          code_highlights: values.highlights,
+          visibility: values.visibility
         }
       })
       if (!updateResult.error) {
@@ -73,6 +75,15 @@ function DocSettings({
             })}
           </Picker>
         </Flex>
+
+        <Picker selectedKey={form.values.visibility} label='Visibility' onSelectionChange={setFieldValue(form, 'visibility')}>
+          <Item key='public'>
+            Public
+          </Item>
+          <Item key='private'>
+            Only team members
+          </Item>
+        </Picker>
 
         <View>
           <small>Syntax Highlight</small>
