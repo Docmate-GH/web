@@ -11,6 +11,7 @@ import Loading from '../../components/Loading'
 import { DragDropContext, Droppable, DroppableProvidedProps, Draggable } from 'react-beautiful-dnd'
 import { client } from '../../client'
 import DragHandleIcon from '@spectrum-icons/workflow/DragHandle'
+import LockClosed from '@spectrum-icons/workflow/LockClosed'
 
 function DocAdmin({
   match,
@@ -125,6 +126,8 @@ function DocAdmin({
                   <Heading level={3} alignSelf='center'>
                     {doc.team.title} / {doc.title}
                   </Heading>
+
+                  {doc.visibility === 'private' ? <LockClosed alignSelf='center' marginStart='size-50' size='S' /> : <></>}
                 </Flex>
 
                 <Flex justifyContent='end' marginEnd='size-100' flex='1'>

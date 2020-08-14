@@ -1,9 +1,11 @@
 import * as React from 'react'
 import Table, { TableHead, TableHeadCell, TableBody, TableRow, TableCell, } from '../../components/Table'
-import { Text } from '@adobe/react-spectrum'
+import { Text, View, Flex } from '@adobe/react-spectrum'
 import { useQuery } from 'urql'
 import { GetTeamDocsResult, GetTeamDocsParams, GetTeamDocs } from '../../gql'
 import { TeamChildrenProps } from '.'
+import LockIcon from '@spectrum-icons/workflow/LockClosed'
+import LockClosed from '@spectrum-icons/workflow/LockClosed'
 
 export default (props: TeamChildrenProps) => {
 
@@ -14,11 +16,16 @@ export default (props: TeamChildrenProps) => {
   return (
     <Table>
       <TableHead>
-        <TableHeadCell>
+
+        {/* <TableHeadCell>
+          <Text> </Text>
+        </TableHeadCell> */}
+
+        <TableHeadCell flex='12'>
           <Text>Doc</Text>
         </TableHeadCell>
 
-        <TableHeadCell>
+        <TableHeadCell style={{ textAlign: 'right' }} flex='3'>
           <Text>Created Date</Text>
         </TableHeadCell>
 
@@ -30,8 +37,19 @@ export default (props: TeamChildrenProps) => {
             <TableRow onClick={_ => {
               props.history.push(`/doc/${doc.id}`)
             }} key={doc.id} >
-              <TableCell>{doc.title}</TableCell>
-              <TableCell>{(new Date(doc.created_at).toLocaleString())}</TableCell>
+              {/* <TableCell style={{ textAlign: 'right' }}>
+
+              </TableCell> */}
+
+              <TableCell flex='12'>
+                <Flex>
+                  <View width='size-500' marginTop='size-10'>
+                    {doc.visibility === 'private' && <LockClosed marginStart="size-100" size='XS' />}
+                  </View>
+                  <Text>{doc.title}</Text>
+                </Flex>
+              </TableCell>
+              <TableCell flex='3' style={{ textAlign: 'right' }}>{(new Date(doc.created_at).toLocaleString())}</TableCell>
             </TableRow>
           )
         })}

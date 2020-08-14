@@ -62,7 +62,8 @@ export type GetTeamDocsResult = {
   doc: {
     id: string,
     title: string,
-    created_at: string
+    created_at: string,
+    visibility: string
   }[]
 }
 export const GetTeamDocs = `
@@ -70,7 +71,7 @@ query($teamId: uuid!) {
   doc(where: {
     team_id: { _eq: $teamId }
   }) {
-    id, title, created_at
+    id, title, created_at, visibility
   }
 }
 `

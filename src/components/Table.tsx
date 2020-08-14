@@ -25,12 +25,14 @@ export function TableHead(props: {
 }
 
 export function TableHeadCell(props: {
+  flex?: string,
   children: any,
   sortable?: boolean,
-  sortedDesc?: boolean
+  sortedDesc?: boolean,
+  style?: any
 }) {
   return (
-    <View flex='1' UNSAFE_className={classnames('spectrum-Table-headCell', { 'is-sortable': props.sortable, 'is-sorted-desc': props.sortedDesc })}>
+    <View UNSAFE_style={props.style} flex={props.flex || '1'} UNSAFE_className={classnames('spectrum-Table-headCell', { 'is-sortable': props.sortable, 'is-sorted-desc': props.sortedDesc })}>
       {props.children}
     </View>
   )
@@ -58,9 +60,11 @@ export function TableRow(props: {
 
 export function TableCell(props: {
   children: any,
+  flex?: string,
+  style?: any
 }) {
   return (
-    <View flex='1' UNSAFE_className='spectrum-Table-cell' {...props}>
+    <View UNSAFE_style={props.style} flex={props.flex || '1'} UNSAFE_className='spectrum-Table-cell' {...props}>
       {props.children}
     </View>
   )
