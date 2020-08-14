@@ -245,7 +245,6 @@ function DocsPannel({
   }
 }) {
   const [selectedTeam, setSelectedTeam] = React.useState(props.match.params.teamId as null | string)
-  const [getTeamDocsResult, getTeamDocs] = useQuery<GetTeamDocsResult>({ query: GetTeamDocs, variables: { teamId: selectedTeam } })
 
   React.useEffect(() => {
     if (!selectedTeam && teams.length > 0) {

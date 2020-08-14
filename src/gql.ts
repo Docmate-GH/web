@@ -70,6 +70,8 @@ export const GetTeamDocs = `
 query($teamId: uuid!) {
   doc(where: {
     team_id: { _eq: $teamId }
+  }, order_by: {
+    created_at: desc
   }) {
     id, title, created_at, visibility
   }
