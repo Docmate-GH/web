@@ -33,6 +33,10 @@ export default {
 
   forkTSChecker: {},
 
+  cssnano: {
+    calc: false,
+  },
+
   proxy: {
     '/api': {
       target: 'http://localhost:3000'
