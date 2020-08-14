@@ -52,6 +52,15 @@ mutation($pageId: uuid!) {
 }
 `
 
+let isDirty = false
+
+window.onbeforeunload = () => {
+  if (isDirty) {
+    return 'You have unsave content'
+  }
+}
+
+
 export default ({
   match,
   history
@@ -74,13 +83,18 @@ export default ({
       content: getPageResult.data?.page[0]?.content
     },
     async onSubmit(values) {
-      const res = await editPage({
-        pageId: getPageResult.data!.page[0].id,
-        input: {
-          title: values.title,
-          content: values.content
-        }
-      })
+      try {
+        const res = await editPage({
+          pageId: getPageResult.data!.page[0].id,
+          input: {
+            title: values.title,
+            content: values.content
+          }
+        })
+        isDirty = false
+      } catch (e) {
+        // TODO:
+      }
     }
   })
 
@@ -89,7 +103,9 @@ export default ({
   }
 
   if (getPageResult.fetching) {
-    return <Loading />
+    return <View width='640px'>
+      <Loading />
+    </View>
   }
 
   if (!getPageResult.data!.page[0]) {
@@ -157,7 +173,10 @@ export default ({
 
 
       <View padding='size-200' backgroundColor='static-white' minHeight='600px'>
-        <Editor id={page.id} onChange={content => mainForm.setFieldValue('content', content)} value={page.content} />
+        <Editor id={page.id} onChange={content => {
+          mainForm.setFieldValue('content', content)
+          isDirty =true
+        }} value={page.content} />
       </View>
     </View>
   )
@@ -171,7 +190,7 @@ function Editor(props: {
   onChange?: (content: string) => void
 }) {
 
-  const [ proLimitDialogVisible, setProLimitDialogVisible ] = React.useState(false)
+  const [proLimitDialogVisible, setProLimitDialogVisible] = React.useState(false)
 
   const container = React.useRef(null as HTMLDivElement | null)
 
