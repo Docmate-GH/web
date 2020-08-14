@@ -113,10 +113,12 @@ export default ({
   }
 
   async function onClickDelete(page: GetPageResult['page'][0]) {
-    const res = await deletePage({
-      pageId: page.id
-    })
-    history.push(`/doc/${docId}`)
+    if (window.confirm('Are you sure delete this page?')) {
+      const res = await deletePage({
+        pageId: page.id
+      })
+      history.push(`/doc/${docId}`)
+    }
   }
 
   const page = getPageResult.data!.page[0]!
