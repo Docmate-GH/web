@@ -5,7 +5,6 @@ import { useFormik } from 'formik'
 import { setFieldValue, alert } from '../../utils'
 import { useQuery, useMutation } from 'urql'
 import { GetTeamFullInfo, GetTeamFullInfoResult, GetTeamFullInfoParams, RemoveMember, RemoveMemberReuslt, RemoveMemberParams, RevokeInviteId, RevokeInviteIdResult, RevokeInviteIdParams, UpdateTeamInfoResult, UpdateTeamInfoParams, UpdateTeamInfo } from '../../gql'
-import * as md5 from 'js-md5'
 import { client } from '../../client'
 
 export default (props: TeamChildrenProps) => {
