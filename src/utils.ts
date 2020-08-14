@@ -237,4 +237,4 @@ export const highlights = [
   "yaml",
   "yang",
   "zig"
-]
+].map(o => ({ value: o, label: o }))

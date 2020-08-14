@@ -24,6 +24,7 @@
     "nanoid": "^3.1.12",
     "normalize.css": "^8.0.1",
     "react-beautiful-dnd": "^13.0.0",
+    "react-select": "^3.1.0",
     "urql": "^1.10.0",
     "yup": "^0.29.3"
   }

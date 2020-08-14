@@ -11,3 +11,19 @@
 .rounded {
   border-radius: 4px;
 }
+
+.Select {
+  width: 444px !important;
+  margin-right: 5px;
+  z-index: 0 !important;
+}
+
+.Select.is-open {
+z-index: 1 !important;
+}
+
+.Select-menu {
+  position: fixed !important;
+  width: 440px !important;
+  margin: 1px;
+}

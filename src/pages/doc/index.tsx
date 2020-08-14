@@ -108,7 +108,6 @@ function DocAdmin({
   return (
     <>
       <DragDropContext onDragEnd={onDragEnd}>
-
         <Flex direction='column' height='100%'>
           <View backgroundColor='static-white'>
             <Flex justifyContent='center'>
@@ -136,62 +135,65 @@ function DocAdmin({
           </View>
 
           <Flex justifyContent='center'>
-            <Flex width='960px'>
-              <View>
-                <View UNSAFE_className='rounded' backgroundColor='static-white' width='size-3000' marginY='size-200' paddingX='size-200' paddingTop='size-100' paddingBottom='size-200' UNSAFE_style={{ boxSizing: 'border-box' }}>
-                  <SideNav>
-                    <SideNavItem>
-                      <SideNavHead>
-                        Doc
+            <View paddingY='size-300'>
+              <Flex>
+                <View>
+                  <View UNSAFE_className='rounded' backgroundColor='static-white' width='size-3000' marginY='size-200' paddingX='size-200' paddingTop='size-100' paddingBottom='size-200' UNSAFE_style={{ boxSizing: 'border-box' }}>
+                    <SideNav>
+                      <SideNavItem>
+                        <SideNavHead>
+                          Doc
                     </SideNavHead>
 
-                    </SideNavItem>
+                      </SideNavItem>
 
-                    <SideNavItem>
-                      <SideNavItemLink onClick={goSettings}>Settings</SideNavItemLink>
-                    </SideNavItem>
+                      <SideNavItem>
+                        <SideNavItemLink onClick={goSettings}>Settings</SideNavItemLink>
+                      </SideNavItem>
 
-                    <SideNavItem>
-                      <SideNavHead>
-                        Pages
+                      <SideNavItem>
+                        <SideNavHead>
+                          Pages
                       </SideNavHead>
 
-                    </SideNavItem>
+                      </SideNavItem>
 
-                    {/* <View marginStart='size-150' marginBottom='size-150'>
+                      {/* <View marginStart='size-150' marginBottom='size-150'>
                       <small style={{ color: 'GrayText' }}>Tips: Drag to re-order</small>
                     </View> */}
-                    <Droppable droppableId={docId}>
-                      {(provided) => {
-                        return (
-                          <div ref={provided.innerRef} {...provided.droppableProps}>
-                            {pages.map((page, index) => {
-                              return (
-                                <SideNavItem selected={selectedSlug === page.slug}>
-                                  <DragablePage key={page.id} onClickPage={onClickPage} page={page} index={index} />
-                                </SideNavItem>
-                              )
-                            })}
-                            {provided.placeholder}
-                          </div>
-                        )
-                      }}
-                    </Droppable>
+                      <Droppable droppableId={docId}>
+                        {(provided) => {
+                          return (
+                            <div ref={provided.innerRef} {...provided.droppableProps}>
+                              {pages.map((page, index) => {
+                                return (
+                                  <SideNavItem selected={selectedSlug === page.slug}>
+                                    <DragablePage key={page.id} onClickPage={onClickPage} page={page} index={index} />
+                                  </SideNavItem>
+                                )
+                              })}
+                              {provided.placeholder}
+                            </div>
+                          )
+                        }}
+                      </Droppable>
 
-                  </SideNav>
+                    </SideNav>
 
-                  <View UNSAFE_className='text-center' paddingY='size-100' >
-                    <ActionButton onPress={onCreateNewPage} >New Page</ActionButton>
+                    <View UNSAFE_className='text-center' paddingY='size-100' >
+                      <ActionButton onPress={onCreateNewPage} >New Page</ActionButton>
+                    </View>
                   </View>
+
                 </View>
 
-              </View>
 
+                <View flex='1' margin='size-200'>
+                  {React.cloneElement(children, { doc })}
+                </View>
+              </Flex>
 
-              <View overflow='scroll' flex='1' margin='size-200'>
-                {React.cloneElement(children, { doc })}
-              </View>
-            </Flex>
+            </View>
           </Flex>
 
           <Footer />

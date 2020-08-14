@@ -1,14 +1,15 @@
 import * as React from 'react'
-import { View, Flex, Form, TextField, RadioGroup, Radio, Button, Picker, Item, ProgressCircle, ListBox } from '@adobe/react-spectrum'
+import { View, Flex, Form, TextField, RadioGroup, Radio, Button, Picker, Item, ProgressCircle, ListBox, Text } from '@adobe/react-spectrum'
 import { useQuery, useMutation } from 'urql'
 import { GetDocByIdResult, UpdateDoc, UpdateDocResult, UpdateDocParams } from '../../../gql'
 import { useFormik } from 'formik'
 import { setFieldValue, alert, highlights } from '../../../utils'
+import Select from 'react-select'
 
 function Container(props) {
   return (
-    <Flex height='100%' justifyContent='center'>
-      <View UNSAFE_className='rounded' width="960px" backgroundColor='static-white' padding='size-200' UNSAFE_style={{ boxSizing: 'border-box' }}>
+    <Flex justifyContent='center'>
+      <View UNSAFE_className='rounded' width="640px" backgroundColor='static-white' padding='size-200' UNSAFE_style={{ boxSizing: 'border-box' }}>
         {props.children}
       </View>
     </Flex>
@@ -33,7 +34,7 @@ function DocSettings({
     initialValues: {
       title: doc.title,
       default_page: doc.default_page,
-      highlights: doc.code_highlights,
+      highlights: doc.code_highlights.map(o => ({ value: o, label: o })),
       visibility: doc.visibility
     },
     async onSubmit(values) {
@@ -42,7 +43,7 @@ function DocSettings({
         input: {
           default_page: values.default_page,
           title: values.title,
-          code_highlights: values.highlights,
+          code_highlights: values.highlights.map(o => o.value),
           visibility: values.visibility
         }
       })
@@ -59,7 +60,6 @@ function DocSettings({
       <Form isQuiet>
         <TextField value={form.values.title} onChange={setFieldValue(form, 'title')} label='Doc Title' />
 
-        <Flex>
           <RadioGroup isDisabled label='Template' orientation='horizontal' value='docute'>
             <Radio value='docute'>Docute</Radio>
             <Radio value='docsify'>Docsify (comming soon...)</Radio>
@@ -74,7 +74,15 @@ function DocSettings({
               )
             })}
           </Picker>
-        </Flex>
+
+
+        <View marginBottom='size-100'>
+          <View marginBottom='size-100'>
+            <small>Syntax Highlight</small>
+          </View>
+          <Select value={form.values.highlights} onChange={setFieldValue(form, 'highlights')} isMulti options={highlights} />
+        </View>
+
 
         <Picker selectedKey={form.values.visibility} label='Visibility' onSelectionChange={setFieldValue(form, 'visibility')}>
           <Item key='public'>
@@ -85,18 +93,7 @@ function DocSettings({
           </Item>
         </Picker>
 
-        <View>
-          <small>Syntax Highlight</small>
-          <ListBox onSelectionChange={(selected) => form.setFieldValue('highlights', selected === 'all' ? highlights : Array.from(selected))} maxWidth='size-3000' selectionMode='multiple' selectedKeys={form.values.highlights} maxHeight='size-3000' >
-            {highlights.map(h => {
-              return (
-                <Item key={h}>{h}</Item>
-              )
-            })}
-          </ListBox>
-        </View>
-
-        <View marginTop='size-500'>
+        <View marginTop='size-100'>
           <Button isDisabled={udpateDocResult.fetching} onPress={form.submitForm} variant='cta'>Save</Button>
         </View>
       </Form>

@@ -110,7 +110,7 @@ export default ({
   }
 
   return (
-    <View>
+    <View width='640px'>
       <View>
         <View padding='size-200' backgroundColor='static-white' UNSAFE_style={{ boxSizing: 'border-box' }}>
           <Flex direction='row' justifyContent='space-between'>
