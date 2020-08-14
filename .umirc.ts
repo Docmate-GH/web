@@ -1,6 +1,8 @@
 import routes from './routes'
-const isProd = process.env.NODE_ENV === 'production'
 
+require('dotenv').config()
+
+const isProd = process.env.NODE_ENV === 'production'
 
 const scripts = [
   '//cdn.jsdelivr.net/npm/codemirror@5.56.0/lib/codemirror.js',
@@ -24,7 +26,12 @@ export default {
   manifest: {},
 
   define: {
-    GQL_PATH: process.env.GQL_PATH || ''
+    GQL_PATH: process.env.GQL_PATH || '',
+    USE_OAUTH: process.env.USE_OAUTH || '',
+    // github client id
+    GH_CLIENT_ID: process.env.GH_CLIENT_ID || '',
+    GH_REDIRECT_URI: process.env.GH_REDIRECT_URI || '',
+    GH_SCOPE: process.env.GH_SCOPE || ''
   },
 
   hash: true,

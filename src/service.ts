@@ -8,16 +8,16 @@ type UserInfo = {
   avatar: string
 }
 class UserService {
-  saveUserInfo(userInfo: UserInfo) {
-    localStorage.setItem('__USER', JSON.stringify(userInfo))
-  }
-
   getUserInfo(): UserInfo | null {
-    const savedInfo = localStorage.getItem('__USER')
-    if (savedInfo) {
-      return JSON.parse(savedInfo) as UserInfo
-    } else {
-      return null
+    const username = Cookies.get('__DOCMATE__USER_USERNAME__')
+    const avatar = Cookies.get('__DOCMATE__USER_AVATAR__')
+    const email = Cookies.get('__DOCMATE__USER_EMAIL__')
+    const id = Cookies.get('__DOCMATE__USER_ID__')
+    return {
+      username,
+      id,
+      email,
+      avatar
     }
   }
 
@@ -30,7 +30,6 @@ class UserService {
   }
 
   async signOut() {
-    localStorage.removeItem('__USER')
     await axios.post('/api/v1/signOut')
     location.href = '/'
   }

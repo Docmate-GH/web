@@ -367,13 +367,6 @@ function SignInForm() {
           email: values.email,
           password: values.password
         })
-        console.log(result.data)
-        userService.saveUserInfo({
-          email: result.data.email,
-          id: result.data.id,
-          avatar: result.data.avatar,
-          username: result.data.username
-        })
         location.reload()
       } catch (e) {
         const errorMessage = e.response.data.message

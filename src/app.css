@@ -19,11 +19,31 @@
 }
 
 .Select.is-open {
-z-index: 1 !important;
+  z-index: 1 !important;
 }
 
 .Select-menu {
   position: fixed !important;
   width: 440px !important;
   margin: 1px;
+}
+
+.oauth-btn {
+  transition: .2s all;
+  width: 100%;
+  display: block;
+  border: 2px solid black;
+  text-align: center;
+  text-decoration: none;
+  color: black;
+  border-radius: 9999px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  font-size: 16px;
+}
+
+.oauth-btn:hover {
+  background-color: black;
+  color: white;
+
 }

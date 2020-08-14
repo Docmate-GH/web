@@ -7,6 +7,11 @@ function wrapProvider(item) {
 
 export default [
   {
+    path: '/sign',
+    exact: true,
+    component: 'sign/index'
+  },
+  {
     path: '/doc',
     routes: [
       {
