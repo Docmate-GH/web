@@ -77,18 +77,24 @@ query($teamId: uuid!) {
   }
 }
 `
-
+export type CreateDocParams = {
+  teamId: string,
+  title: string,
+  visibility: string,
+  template: string
+}
 export type CreateDocResult = {
   insert_doc_one: {
     id: string
   }
 }
 export const CreateDoc = `
-mutation($teamId: uuid!, $title: String!, $visibility: String!) {
+mutation($teamId: uuid!, $title: String!, $visibility: String!, $template: String!) {
   insert_doc_one(object: {
     team_id: $teamId,
     visibility: $visibility,
-    title: $title
+    title: $title,
+    template: $template
   }) {
     id
   }
@@ -106,6 +112,7 @@ export type GetDocByIdResult = {
       id: string
     },
     default_page?: string
+    template: string
     pages: {
       id: string,
       slug: string,
@@ -118,6 +125,7 @@ query($docId: uuid!) {
   doc_by_pk(id: $docId) {
     visibility,
     code_highlights,
+    template
     team {
       title, id
     }, default_page, 
@@ -160,6 +168,7 @@ export type UpdateDocParams = {
     title?: string,
     default_page?: string,
     code_highlights?: string[],
+    template?: string
     visibility: 'private' | 'public'
   }
 }

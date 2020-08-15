@@ -8,7 +8,7 @@ import { useFormik } from 'formik'
 const yup = require('yup')
 import { View, Flex, Button, Text, IllustratedMessage, Link, Heading, Content, DialogTrigger, Footer, ActionButton, Dialog, Divider, ButtonGroup, Form, TextField, RadioGroup, Radio, Header, MenuTrigger, Menu, Item, Picker, Section } from '@adobe/react-spectrum'
 import { userService } from '../service'
-import { SignInResult, SignIn, SignUpResult, SignUp, GetUserTeams, GetUserTeamsResult, GetTeamDocsResult, GetTeamDocs, CreateDocResult, CreateDoc, CreateTeam, CreateTeamParams, CreateTeamResult, GetUserTeamParams } from '../gql'
+import { SignInResult, SignIn, SignUpResult, SignUp, GetUserTeams, GetUserTeamsResult, GetTeamDocsResult, GetTeamDocs, CreateDocResult, CreateDoc, CreateTeam, CreateTeamParams, CreateTeamResult, GetUserTeamParams, CreateDocParams } from '../gql'
 import AppFooter from '../components/Footer'
 
 function CreateDocTrigger({
@@ -17,19 +17,21 @@ function CreateDocTrigger({
   teams: GetUserTeamsResult['users_by_pk']['user_teams']
 }) {
 
-  const [createDocResult, createDoc] = useMutation<CreateDocResult>(CreateDoc)
+  const [createDocResult, createDoc] = useMutation<CreateDocResult, CreateDocParams>(CreateDoc)
 
   const form = useFormik({
     initialValues: {
       visibility: 'public',
       title: '',
+      template: 'docute',
       teamId: teams[0]?.team.id || ''
     },
     async onSubmit(values) {
       const result = await createDoc({
         title: values.title,
         teamId: values.teamId,
-        visibility: values.visibility
+        visibility: values.visibility,
+        template: values.template
       })
 
       if (result.data?.insert_doc_one.id) {
@@ -80,9 +82,9 @@ function CreateDocTrigger({
                     <Radio value='private'>Only team members</Radio>
                   </RadioGroup>
 
-                  <RadioGroup isDisabled label='Template' orientation='horizontal' value='docute'>
+                  <RadioGroup label='Template' orientation='horizontal' value={form.values.template} onChange={utils.setFieldValue(form, 'template')}>
                     <Radio value='docute'>Docute</Radio>
-                    <Radio value='docsify'>Docsify (comming soon...)</Radio>
+                    <Radio value='docsify'>Docsify</Radio>
                   </RadioGroup>
 
                 </Form>

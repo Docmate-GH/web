@@ -35,7 +35,8 @@ function DocSettings({
       title: doc.title,
       default_page: doc.default_page,
       highlights: doc.code_highlights.map(o => ({ value: o, label: o })),
-      visibility: doc.visibility
+      visibility: doc.visibility,
+      template: doc.template
     },
     async onSubmit(values) {
       const updateResult = await updateDoc({
@@ -44,7 +45,8 @@ function DocSettings({
           default_page: values.default_page,
           title: values.title,
           code_highlights: values.highlights.map(o => o.value),
-          visibility: values.visibility
+          visibility: values.visibility,
+          template: values.template
         }
       })
       if (!updateResult.error) {
@@ -60,9 +62,9 @@ function DocSettings({
       <Form isQuiet>
         <TextField value={form.values.title} onChange={setFieldValue(form, 'title')} label='Doc Title' />
 
-          <RadioGroup isDisabled label='Template' orientation='horizontal' value='docute'>
+          <RadioGroup label='Template' orientation='horizontal' value={form.values.template} onChange={setFieldValue(form, 'template')}>
             <Radio value='docute'>Docute</Radio>
-            <Radio value='docsify'>Docsify (comming soon...)</Radio>
+            <Radio value='docsify'>Docsify</Radio>
           </RadioGroup>
 
           <Picker selectedKey={form.values.default_page} label='Home Page' onSelectionChange={setFieldValue(form, 'default_page')}>
