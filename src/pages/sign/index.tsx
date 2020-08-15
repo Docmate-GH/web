@@ -7,6 +7,7 @@ import { useFormik } from 'formik'
 import * as yup from 'yup'
 import * as utils from '../../utils'
 import { httpClient } from '../../client'
+import { userService } from '../../service'
 
 enum SignView {
   SignUp,
@@ -122,7 +123,7 @@ function SignInForm() {
 
 declare var USE_OAUTH: string
 
-export default function () {
+export default function (props) {
 
   const [view, setView] = React.useState(USE_OAUTH === 'true' ? SignView.OAuth : SignView.SignIn)
 
